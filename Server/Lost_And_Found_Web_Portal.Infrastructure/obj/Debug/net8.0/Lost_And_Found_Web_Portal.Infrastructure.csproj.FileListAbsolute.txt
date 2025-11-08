@@ -1,0 +1,15 @@
+F:\Attachment\Lost_and_Found_Web_Portal_App\Server\Lost_And_Found_Web_Portal.Infrastructure\bin\Debug\net8.0\Lost_And_Found_Web_Portal.Infrastructure.deps.json
+F:\Attachment\Lost_and_Found_Web_Portal_App\Server\Lost_And_Found_Web_Portal.Infrastructure\bin\Debug\net8.0\Lost_And_Found_Web_Portal.Infrastructure.dll
+F:\Attachment\Lost_and_Found_Web_Portal_App\Server\Lost_And_Found_Web_Portal.Infrastructure\bin\Debug\net8.0\Lost_And_Found_Web_Portal.Infrastructure.pdb
+F:\Attachment\Lost_and_Found_Web_Portal_App\Server\Lost_And_Found_Web_Portal.Infrastructure\bin\Debug\net8.0\Lost_And_Found_Web_Portal.Core.dll
+F:\Attachment\Lost_and_Found_Web_Portal_App\Server\Lost_And_Found_Web_Portal.Infrastructure\bin\Debug\net8.0\Lost_And_Found_Web_Portal.Core.pdb
+F:\Attachment\Lost_and_Found_Web_Portal_App\Server\Lost_And_Found_Web_Portal.Infrastructure\obj\Debug\net8.0\Lost_And_Found_Web_Portal.Infrastructure.csproj.AssemblyReference.cache
+F:\Attachment\Lost_and_Found_Web_Portal_App\Server\Lost_And_Found_Web_Portal.Infrastructure\obj\Debug\net8.0\Lost_And_Found_Web_Portal.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+F:\Attachment\Lost_and_Found_Web_Portal_App\Server\Lost_And_Found_Web_Portal.Infrastructure\obj\Debug\net8.0\Lost_And_Found_Web_Portal.Infrastructure.AssemblyInfoInputs.cache
+F:\Attachment\Lost_and_Found_Web_Portal_App\Server\Lost_And_Found_Web_Portal.Infrastructure\obj\Debug\net8.0\Lost_And_Found_Web_Portal.Infrastructure.AssemblyInfo.cs
+F:\Attachment\Lost_and_Found_Web_Portal_App\Server\Lost_And_Found_Web_Portal.Infrastructure\obj\Debug\net8.0\Lost_And_Found_Web_Portal.Infrastructure.csproj.CoreCompileInputs.cache
+F:\Attachment\Lost_and_Found_Web_Portal_App\Server\Lost_And_Found_Web_Portal.Infrastructure\obj\Debug\net8.0\Lost_And.2C9C347C.Up2Date
+F:\Attachment\Lost_and_Found_Web_Portal_App\Server\Lost_And_Found_Web_Portal.Infrastructure\obj\Debug\net8.0\Lost_And_Found_Web_Portal.Infrastructure.dll
+F:\Attachment\Lost_and_Found_Web_Portal_App\Server\Lost_And_Found_Web_Portal.Infrastructure\obj\Debug\net8.0\refint\Lost_And_Found_Web_Portal.Infrastructure.dll
+F:\Attachment\Lost_and_Found_Web_Portal_App\Server\Lost_And_Found_Web_Portal.Infrastructure\obj\Debug\net8.0\Lost_And_Found_Web_Portal.Infrastructure.pdb
+F:\Attachment\Lost_and_Found_Web_Portal_App\Server\Lost_And_Found_Web_Portal.Infrastructure\obj\Debug\net8.0\ref\Lost_And_Found_Web_Portal.Infrastructure.dll
