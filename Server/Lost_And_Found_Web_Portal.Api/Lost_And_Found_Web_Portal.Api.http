@@ -1,0 +1,6 @@
+@Lost_And_Found_Web_Portal.Api_HostAddress = http://localhost:5251
+
+GET {{Lost_And_Found_Web_Portal.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
