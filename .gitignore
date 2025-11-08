@@ -1,0 +1,22 @@
+# Ignore everything by default
+*
+
+# But keep .gitignore itself
+!.gitignore
+
+# Allow the project folder and everything inside it
+!lost-found-portal/
+!lost-found-portal/**
+
+# Usual ignores inside that folder (optional safety)
+**/node_modules/
+**/dist/
+**/.vite/
+.vscode/
+.DS_Store
+npm-debug.log*
+yarn-*.log*
+pnpm-*.log*
+.env
+.env.*
+!.env.example
