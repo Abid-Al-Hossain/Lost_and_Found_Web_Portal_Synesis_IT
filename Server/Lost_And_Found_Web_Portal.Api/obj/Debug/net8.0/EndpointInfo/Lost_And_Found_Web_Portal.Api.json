@@ -109,6 +109,18 @@
           }
         }
       }
+    },
+    "/Authentication/GetCurrentUserRoles": {
+      "get": {
+        "tags": [
+          "Authentication"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
     }
   },
   "components": {

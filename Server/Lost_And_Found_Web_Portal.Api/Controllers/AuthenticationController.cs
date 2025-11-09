@@ -6,17 +6,19 @@ using Lost_And_Found_Web_Portal.Core.Helpers;
 using Lost_And_Found_Web_Portal.Core.ServiceContracts;
 using Lost_And_Found_Web_Portal.Infrastructure.DbContext;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Lost_And_Found_Web_Portal.Api.Controllers
 {
     [Route("[controller]/[action]")]
     [ApiController]
     [TypeFilter(typeof(ModelStateHandleFilter))]
-    [AllowAnonymous]
+    //[AllowAnonymous]
     public class AuthenticationController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -36,6 +38,7 @@ namespace Lost_And_Found_Web_Portal.Api.Controllers
 
         // User Registration
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> RegisterUser(RegisterDTO registerDTO)
         {
             
@@ -75,10 +78,11 @@ namespace Lost_And_Found_Web_Portal.Api.Controllers
 
         // Admin Registration using Secure Api
         [HttpPost("/SecuredApiCode/[action]")]
+        [AllowAnonymous]
         public async Task<IActionResult> RegisterAdmin(RegisterDTO registerDTO)
         {
 
-            ApplicationUser user = new ApplicationUser
+            ApplicationUser admin = new ApplicationUser
             {
                 UserName = registerDTO.Email,
                 Email = registerDTO.Email,
@@ -86,19 +90,19 @@ namespace Lost_And_Found_Web_Portal.Api.Controllers
                 PhoneNumber = registerDTO.PhoneNumber,
             };
 
-            IdentityResult result = await _userManager.CreateAsync(user, registerDTO.Password);
+            IdentityResult result = await _userManager.CreateAsync(admin, registerDTO.Password);
 
             if (result.Succeeded)
             {
-                if (!await _roleManager.RoleExistsAsync("User"))
+                if (!await _roleManager.RoleExistsAsync("Admin"))
                 {
                     ApplicationRole userRole = new ApplicationRole
                     {
-                        Name = UserTypes.User.ToString()
+                        Name = UserTypes.Admin.ToString()
                     };
                     await _roleManager.CreateAsync(userRole);
                 }
-                await _userManager.AddToRoleAsync(user, UserTypes.Admin.ToString());
+                await _userManager.AddToRoleAsync(admin, UserTypes.Admin.ToString());
 
                 return Ok("User registered successfully.");
             }
@@ -113,6 +117,7 @@ namespace Lost_And_Found_Web_Portal.Api.Controllers
 
         // Login
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> Login(LoginDTO loginDTO)
         {
             ApplicationUser? user = await _userManager.FindByEmailAsync(loginDTO.UserName);
@@ -121,6 +126,7 @@ namespace Lost_And_Found_Web_Portal.Api.Controllers
             {
                 List<String> roles = _userManager.GetRolesAsync(user).Result.ToList();
                 string token = await _authenticationService.GetToken(user.Email, roles);
+
                 _logger.LogInformation("Login successful for user: {UserName}", loginDTO.UserName);
                 return Ok(new { message = "Login Success", token });
             }
@@ -134,10 +140,28 @@ namespace Lost_And_Found_Web_Portal.Api.Controllers
 
         // Logout
         [HttpPost]
-        [Authorize(Roles = "User,Admin")]
+        [Authorize(Roles ="User")]
         public async Task<IActionResult> Logout()
         {
             string? token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+
+            string? email = User.FindFirst("userEmail")?.Value.ToString();
+            var roles = User.FindAll(ClaimTypes.Role).Select(r => r.Value).ToList();
+            
+            // Roles using jwt - Dycrypt token
+            var jwtRoles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
+
+
+            _logger.LogInformation("Logout attempt by user: {UserEmail} with roles: {UserRoles}", email, string.Join(", ", roles));
+
+
+            if (token == null)
+            {
+                _logger.LogInformation("No Token");
+            }
+
+            _logger.LogInformation("Token Found");
+
             if (token != null)
             {
                 bool isBlacklisted = await _authenticationService.BlackListToken(token);
@@ -159,6 +183,30 @@ namespace Lost_And_Found_Web_Portal.Api.Controllers
             }
         }
 
+        // Add this method to extract roles from any authenticated request
+        [HttpGet]
+        [Authorize] // Any authenticated user
+        public IActionResult GetCurrentUserRoles()
+        {
+            // Get user email from token
+            string? email = User.FindFirst("userEmail")?.Value;
+
+            // Get roles from token
+            var roles = User.FindAll(ClaimTypes.Role).Select(r => r.Value).ToList();
+
+            // Get all claims for debugging
+            var allClaims = User.Claims.Select(c => new { c.Type, c.Value }).ToList();
+
+            _logger.LogInformation("User {Email} has roles: {Roles}", email, string.Join(", ", roles));
+
+            return Ok(new
+            {
+                Email = email,
+                Roles = roles,
+                IsAuthenticated = User.Identity?.IsAuthenticated,
+                AllClaims = allClaims // For debugging - remove in production
+            });
+        }
 
     }
 }

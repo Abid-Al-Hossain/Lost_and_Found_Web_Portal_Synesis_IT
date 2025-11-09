@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Lost_And_Found_Web_Portal.Core")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c190b03b1cb6f1708b0775d266a1a399df6c27bd")]
 [assembly: System.Reflection.AssemblyProductAttribute("Lost_And_Found_Web_Portal.Core")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Lost_And_Found_Web_Portal.Core")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

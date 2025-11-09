@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Security.Claims;
 using System.Text;
 
 namespace Lost_And_Found_Web_Portal.Api.StartupExtensions
@@ -90,27 +91,36 @@ namespace Lost_And_Found_Web_Portal.Api.StartupExtensions
 
 
             // JWT Authentication configuration
-            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
+            // JWT Authentication configuration
+            // JWT Authentication configuration - Updated version
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                var tokenKey = builder.Configuration.GetSection("AppSettings:TokenKey").Value;
+                if (string.IsNullOrEmpty(tokenKey))
                 {
-                    var tokenKey = builder.Configuration.GetSection("AppSettings:TokenKey").Value;
-                    if (string.IsNullOrEmpty(tokenKey))
-                    {
-                        throw new InvalidOperationException("TokenKey is not configured in the app settings.");
-                    }
+                    throw new InvalidOperationException("TokenKey is not configured in the app settings.");
+                }
 
-                    options.TokenValidationParameters = new TokenValidationParameters()
-                    {
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenKey)),
-                        ValidateIssuer = false,
-                        ValidateAudience = false
-                    };
-                });
+                options.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenKey)),
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    RoleClaimType = ClaimTypes.Role // This is crucial!
+                };
+            });
 
 
             // Identity configuration
-            services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
+            // Replace the Identity configuration with this:
+            services.AddIdentityCore<ApplicationUser>(options =>
             {
                 options.User.RequireUniqueEmail = true;
                 options.Password.RequiredLength = 8;
@@ -118,31 +128,29 @@ namespace Lost_And_Found_Web_Portal.Api.StartupExtensions
                 options.Password.RequireUppercase = false;
                 options.Password.RequireLowercase = false;
                 options.Password.RequireDigit = false;
-                //options.SignIn.RequireConfirmedEmail = false;
-                options.Lockout.MaxFailedAccessAttempts = 5;
-                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
             })
-                .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders()
-                .AddUserStore<UserStore<ApplicationUser, ApplicationRole, ApplicationDbContext, Guid>>()
-                .AddRoleStore<RoleStore<ApplicationRole, ApplicationDbContext, Guid>>();
+            .AddRoles<ApplicationRole>() // Add this for role support
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddDefaultTokenProviders()
+            .AddUserStore<UserStore<ApplicationUser, ApplicationRole, ApplicationDbContext, Guid>>()
+            .AddRoleStore<RoleStore<ApplicationRole, ApplicationDbContext, Guid>>();
 
 
 
-            // Authorization configuration
-            services.AddAuthorization(options =>
+            //Authorization configuration
+
+            builder.Services.AddAuthorization(options =>
             {
-                options.FallbackPolicy = new AuthorizationPolicyBuilder().
-                RequireAuthenticatedUser().Build();
-                //options.AddPolicy("AllowAnonymous", policy => policy.RequireAssertion(context => true));
-                options.AddPolicy("NotAuthenticated", policy =>
-                {
-                    policy.RequireAssertion(context =>
-                    {
-                        return context.User?.Identity == null || context.User?.Identity?.IsAuthenticated == false;
-                    });
-                });
+                options.DefaultPolicy = new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .Build();
+
+
+                options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
+                options.AddPolicy("UserPolicy", policy => policy.RequireRole("User"));
+                options.AddPolicy("AdminOrUser", policy => policy.RequireRole("Admin", "User"));
             });
+
 
         }
     }
