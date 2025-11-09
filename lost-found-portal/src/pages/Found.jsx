@@ -1,71 +1,67 @@
-import { useState } from 'react'
+// src/pages/Found.jsx
+import { useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
 import { store } from '../utils/storage'
-import MapPicker from '../components/MapPicker'
 import ItemCard from '../components/ItemCard'
-import { useSettings } from '../context/SettingsContext'
+import ComposerFound from '../components/ComposerFound'
+import { useAuth } from '../context/AuthContext'
+import { useChat } from '../context/ChatContext'
+import { findMatches } from '../utils/matcher'
+import { useNavigate } from 'react-router-dom'
 
-// Found flow: minimal public details + private attributes for later verification
+const KEY_FOUND = 'lf_found_v1'
+const KEY_LOST = 'lf_lost_v1'
+
 export default function Found(){
-  const [publicForm, setPublicForm] = useState({ type:'', place:'', date:'', location:null })
-  const [privateForm, setPrivateForm] = useState({ brand:'', color:'', detail:'' })
-  const [items, setItems] = useState(()=> store.get('lf_found_v1', []))
-  const { play } = useSettings()
+  const [items, setItems] = useState(()=> store.get(KEY_FOUND, []))
+  const [mine, setMine] = useState(false)
+  const { user } = useAuth()
+  const { notifyPotentialMatch } = useChat()
+  const nav = useNavigate()
 
-  const submit = (e) => {
-    e.preventDefault()
-    const newItem = {
-      id: crypto.randomUUID(),
-      ...publicForm,
-      private: privateForm,
-      status: 'Pending'
-    }
-    const next = [newItem, ...items]
+  const addItem = (item) => {
+    const next = [item, ...items]
     setItems(next)
-    store.set('lf_found_v1', next)
-    play('success')
-    setPublicForm({ type:'', place:'', date:'', location:null })
-    setPrivateForm({ brand:'', color:'', detail:'' })
+    store.set(KEY_FOUND, next)
+
+    // Match the new FOUND against all LOST within 100m & similar type (+brand/color if available)
+    const lostList = store.get(KEY_LOST, [])
+    const matches = findMatches('found', item, { candidates: lostList, maxMeters: 100 })
+    if (matches.length > 0) {
+      const m = matches[0]
+      const t = notifyPotentialMatch(m)
+      if (t && window.confirm(`Nearby “Lost” match for "${item.type}" within ~${m.distanceM}m. Open chat?`)) {
+        nav(`/inbox?t=${t.id}`)
+      }
+    }
   }
+
+  const visible = useMemo(() => {
+    if (mine && user?.email) return items.filter(i => i.ownerId === user.email)
+    return items
+  }, [items, mine, user])
 
   return (
     <motion.div
-      className="grid cols-2"
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -12 }}
       transition={{ duration: 0.35 }}
+      className="feed"
     >
-      <div className="panel" style={{padding:20}}>
-        <h3 style={{marginTop:0}}>Report Found Item</h3>
-        <form className="grid" onSubmit={submit}>
-          <div className="row">
-            <input className="input" placeholder="Item type" value={publicForm.type} onChange={e=>setPublicForm({...publicForm, type:e.target.value})} required />
-            <input className="input" placeholder="Place found" value={publicForm.place} onChange={e=>setPublicForm({...publicForm, place:e.target.value})} />
-          </div>
-          <input className="input" type="date" value={publicForm.date} onChange={e=>setPublicForm({...publicForm, date:e.target.value})} required />
+      <ComposerFound onCreate={addItem} />
 
-          {/* Location picker */}
-          <MapPicker value={publicForm.location} onChange={(loc)=>setPublicForm({...publicForm, location: loc})} />
-
-          <div className="panel mt-4" style={{padding:16}}>
-            <h4 style={{marginTop:0}}>Private attributes (for verification)</h4>
-            <div className="row">
-              <input className="input" placeholder="Brand" value={privateForm.brand} onChange={e=>setPrivateForm({...privateForm, brand:e.target.value})} />
-              <input className="input" placeholder="Color" value={privateForm.color} onChange={e=>setPrivateForm({...privateForm, color:e.target.value})} />
-            </div>
-            <input className="input mt-3" placeholder="Extra detail (e.g., zipper color)" value={privateForm.detail} onChange={e=>setPrivateForm({...privateForm, detail:e.target.value})} />
-          </div>
-
-          <button className="btn mt-3">Submit</button>
-        </form>
+      <div className="panel" style={{padding:12, display:'flex', alignItems:'center', justifyContent:'space-between'}}>
+        <div className="filters">
+          <button className={`chip ${!mine ? 'active':''}`} onClick={()=>setMine(false)}>All posts</button>
+          <button className={`chip ${mine ? 'active':''}`} onClick={()=>setMine(true)}>My posts</button>
+        </div>
+        <div style={{color:'var(--muted)'}}>{visible.length} item(s)</div>
       </div>
 
-      <div className="grid" style={{alignContent:'start'}}>
-        {items.length===0 ? (
-          <div className="panel center" style={{padding:24}}>No found items yet.</div>
-        ) : items.map(i => <ItemCard key={i.id} item={i} />)}
-      </div>
+      {visible.length === 0 ? (
+        <div className="panel center" style={{padding:24}}>No found items yet.</div>
+      ) : visible.map(i => <ItemCard key={i.id} item={i} type="found" />)}
     </motion.div>
   )
 }

@@ -1,139 +1,159 @@
-:root {
-    /* Theme tokens (user-customizable) */
-    --bg: #0b1220;          /* background */
-    --panel: #0f172a;       /* surfaces */
-    --text: #e5e7eb;        /* text */
-    --muted: #96a0b5;       /* secondary text */
-    --accent: #60a5fa;      /* primary accent */
-    --accent-2: #34d399;    /* secondary accent */
-    --radius: 16px;
-    --shadow: 0 10px 30px rgba(0,0,0,.35);
-  }
-  
-  /* Light theme toggles via [data-theme="light"] on <html> */
-  html[data-theme="light"] {
-    --bg: #fbfbfe;
-    --panel: #ffffff;
-    --text: #0b1220;
-    --muted: #4b5563;
-    --accent: #2563eb;
-    --accent-2: #059669;
-  }
-  
-  * { box-sizing: border-box }
-  html, body, #root { height: 100% }
-  body {
-    margin: 0;
-    background:
-      radial-gradient(1200px 600px at 20% -10%, rgba(96,165,250,.15), transparent),
-      radial-gradient(1000px 500px at 120% 10%, rgba(52,211,153,.12), transparent),
-      var(--bg);
-    color: var(--text);
-    font: 16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-  }
-  
-  a { color: var(--accent); text-decoration: none }
-  button { font: inherit }
-  
-  .container { max-width: 1100px; margin: 0 auto; padding: 24px }
-  
-  .panel {
-    background: linear-gradient(180deg, color-mix(in hsl, var(--panel), #000 4%), var(--panel));
-    border: 1px solid color-mix(in hsl, var(--panel), #fff 8%);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-  }
-  
-  .input {
-    width: 100%;
-    padding: 12px 14px;
-    background: color-mix(in hsl, var(--panel), #fff 4%);
-    border: 1px solid color-mix(in hsl, var(--panel), #fff 10%);
-    border-radius: 12px;
-    color: var(--text);
-  }
-  .input:focus { outline: 2px solid color-mix(in hsl, var(--accent), #fff 30%) }
-  
-  .btn {
-    display:inline-flex; align-items:center; justify-content:center;
-    gap:10px; height:44px; padding:0 18px;
-    border-radius: 12px; border: 1px solid transparent;
-    background: linear-gradient(180deg, color-mix(in hsl, var(--accent), #fff 10%), var(--accent));
-    color: white; cursor: pointer; box-shadow: var(--shadow);
-  }
-  .btn.secondary { background: color-mix(in hsl, var(--panel), #fff 8%); color: var(--text); border: 1px solid color-mix(in hsl, var(--panel), #fff 12%) }
-  .btn.ghost { background: transparent; border:1px solid color-mix(in hsl, var(--panel), #fff 12%); color: var(--text) }
-  .btn:disabled { opacity:.6; cursor: not-allowed }
-  
-  .grid { display:grid; gap:16px }
-  .grid.cols-2 { grid-template-columns: repeat(2, minmax(0,1fr)) }
-  @media (max-width: 900px){ .grid.cols-2 { grid-template-columns: 1fr } }
-  
-  .badge { display:inline-flex; padding:6px 10px; border-radius:999px; background: color-mix(in hsl, var(--accent), #fff 70%); color: #0b1220; font-weight:600 }
-  
-  /* Map sizing */
-  .map { height: 320px; width: 100%; border-radius: 12px; overflow: hidden; position: relative; z-index: 1; }
-  
-  /* Mini map inside cards */
-  .mini-map {
-    height: 160px;
-    width: 100%;
-    border-radius: 12px;
-    overflow: hidden;
-  }
-  
-  /* Uploaded/preview image */
-  .item-photo {
-    display:block;
-    width: 100%;
-    max-height: 320px;
-    object-fit: cover;
-    border-radius: 12px;
-    border: 1px solid color-mix(in hsl, var(--panel), #fff 10%);
-  }
-  
-  /* Utility */
-  .row { display:flex; gap:12px; flex-wrap:wrap }
-  .mt-2{ margin-top:8px } .mt-3{ margin-top:12px } .mt-4{ margin-top:16px } .mt-6{ margin-top:24px }
-  .mb-4{ margin-bottom:16px } .mb-6{ margin-bottom:24px }
-  .center { display:flex; align-items:center; justify-content:center }
-  .hidden { display:none }
-  
-  /* =========================
-     Modal & Leaflet stacking
-     ========================= */
-  .modal-root {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.45);
-    display: grid;
-    place-items: center;
-    z-index: 10000; /* above the app */
-  }
-  
-  .modal-card {
-    width: min(720px, 92vw);
-    padding: 20px;
-    position: relative;       /* create stacking context */
-    z-index: 10010;           /* above overlay */
-  }
-  
-  .modal-body { position: relative; z-index: 10010; }
-  
-  .modal-footer {
-    display: flex;
-    gap: 12px;
-    justify-content: flex-end;
-    margin-top: 16px;
-    position: relative;
-    z-index: 10020;           /* above Leaflet panes */
-  }
-  
-  /* Ensure Leaflet never covers modal footer/buttons */
-  .leaflet-container { z-index: 0 !important; }
-  .leaflet-pane,
-  .leaflet-top,
-  .leaflet-bottom {
-    z-index: 500 !important;  /* keep map layers below modal footer */
-  }
-  
+:root{
+  --bg:#0b1220;
+  --panel:#0f172a;
+  --text:#e5e7eb;
+  --muted:#96a0b5;
+  --accent:#60a5fa;
+  --accent-2:#34d399;
+  --radius:16px;
+  --shadow:0 10px 30px rgba(0,0,0,.35);
+
+  /* Spacing/system */
+  --gap-xs:8px;
+  --gap-sm:12px;
+  --gap-md:16px;
+  --gap-lg:20px;
+  --gap-xl:24px;
+
+  --control-h:48px;   /* <-- taller controls app-wide */
+  --control-r:12px;
+}
+
+html[data-theme="light"]{
+  --bg:#fbfbfe;
+  --panel:#ffffff;
+  --text:#0b1220;
+  --muted:#4b5563;
+  --accent:#2563eb;
+  --accent-2:#059669;
+}
+
+*{box-sizing:border-box}
+html,body,#root{height:100%}
+body{
+  margin:0;
+  background:
+    radial-gradient(1200px 600px at 20% -10%, rgba(96,165,250,.15), transparent),
+    radial-gradient(1000px 500px at 120% 10%, rgba(52,211,153,.12), transparent),
+    var(--bg);
+  color:var(--text);
+  font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";
+}
+
+a{color:var(--accent);text-decoration:none}
+button{font:inherit}
+
+.container{max-width:1100px;margin:0 auto;padding:var(--gap-xl)}
+
+.panel{
+  background:linear-gradient(180deg,color-mix(in hsl,var(--panel),#000 4%),var(--panel));
+  border:1px solid color-mix(in hsl,var(--panel),#fff 8%);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+}
+
+/* ---------- Controls ---------- */
+label{font-weight:600;display:block;margin-bottom:6px}
+.input, select, textarea{
+  width:100%;
+  min-height:var(--control-h);
+  padding:12px 14px;
+  background:color-mix(in hsl,var(--panel),#fff 4%);
+  border:1px solid color-mix(in hsl,var(--panel),#fff 12%);
+  border-radius:var(--control-r);
+  color:var(--text);
+}
+textarea{resize:vertical;min-height:120px}
+.input:focus, select:focus, textarea:focus{
+  outline:2px solid color-mix(in hsl,var(--accent),#fff 30%);
+}
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  gap:10px;height:var(--control-h);padding:0 18px;
+  border-radius:var(--control-r);border:1px solid transparent;
+  background:linear-gradient(180deg,color-mix(in hsl,var(--accent),#fff 10%),var(--accent));
+  color:#fff;cursor:pointer;box-shadow:var(--shadow);
+}
+.btn.secondary{background:color-mix(in hsl,var(--panel),#fff 8%);color:var(--text);border:1px solid color-mix(in hsl,var(--panel),#fff 14%)}
+.btn.ghost{background:transparent;border:1px solid color-mix(in hsl,var(--panel),#fff 14%);color:var(--text)}
+.btn.pill{height:40px;padding:0 14px;border-radius:999px}
+.btn:disabled{opacity:.6;cursor:not-allowed}
+
+/* ---------- Feed ---------- */
+.feed{display:grid;gap:var(--gap-lg)}
+
+/* Composer */
+.composer{display:flex;align-items:center;gap:var(--gap-md);padding:var(--gap-md)}
+.avatar{
+  width:42px;height:42px;border-radius:999px;display:grid;place-items:center;
+  font-weight:800;background:color-mix(in hsl,var(--accent),#000 18%);color:#fff;box-shadow:var(--shadow);
+}
+.composer-input{
+  flex:1;height:44px;border-radius:999px;border:1px solid color-mix(in hsl,var(--panel),#fff 12%);
+  background:color-mix(in hsl,var(--panel),#fff 8%);padding:0 16px;color:var(--muted);display:flex;align-items:center;
+}
+
+/* Filters */
+.filters{display:flex;gap:10px;align-items:center}
+.chip{
+  height:34px;padding:0 14px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;
+  background:color-mix(in hsl,var(--panel),#fff 10%);border:1px solid color-mix(in hsl,var(--panel),#fff 15%);color:var(--text)
+}
+.chip.active{background:color-mix(in hsl,var(--accent),#fff 80%);color:#0b1220;font-weight:700}
+
+/* Maps */
+.map{height:320px;width:100%;border-radius:12px;overflow:hidden;position:relative;z-index:1}
+.mini-map{height:160px;width:100%;border-radius:12px;overflow:hidden}
+
+/* Images */
+.item-photo{display:block;width:100%;max-height:320px;object-fit:cover;border-radius:12px;border:1px solid color-mix(in hsl,var(--panel),#fff 10%)}
+
+/* Utility */
+.grid{display:grid;gap:var(--gap-md)}
+.row{display:flex;gap:var(--gap-md);flex-wrap:wrap}
+.mt-2{margin-top:var(--gap-sm)}.mt-3{margin-top:var(--gap-md)}.mt-4{margin-top:var(--gap-lg)}.mt-6{margin-top:32px}
+.mb-4{margin-bottom:var(--gap-lg)}.mb-6{margin-bottom:32px}
+.center{display:flex;align-items:center;justify-content:center}
+.hidden{display:none}
+
+/* ---------- Modal ---------- */
+/* Backdrop */
+.modal-root{
+  position:fixed;inset:0;background:rgba(0,0,0,.45);
+  display:grid;place-items:center;z-index:10000;overscroll-behavior:contain;
+}
+/* Card */
+.modal-card{
+  width:min(900px,94vw);max-height:92vh;padding:20px;position:relative;z-index:10010;
+  display:flex;flex-direction:column;overflow:hidden;border-radius:var(--radius);
+}
+/* Sticky title */
+.modal-card>h3{
+  position:sticky;top:0;margin:0 0 var(--gap-sm) 0;padding-bottom:var(--gap-sm);
+  background:var(--panel);z-index:2;
+}
+/* Scrollable, padded body with section cards */
+.modal-body{
+  overflow:auto;padding:0 4px var(--gap-lg) 0; /* bottom pad so footer never overlaps */
+  flex:1;display:grid;gap:var(--gap-md);grid-auto-rows:min-content;
+}
+.modal-body>*{
+  background:linear-gradient(180deg,color-mix(in hsl,var(--panel),#000 3%),var(--panel));
+  border:1px solid color-mix(in hsl,var(--panel),#fff 10%);
+  border-radius:14px;padding:var(--gap-md);box-shadow:var(--shadow);
+}
+.modal-body .panel{background:transparent;border:0;box-shadow:none;padding:0}
+.modal-body h4{margin:0 0 var(--gap-sm) 0;font-size:18px}
+.field-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--gap-md)}
+@media (max-width:720px){.field-row{grid-template-columns:1fr}}
+/* Footer */
+.modal-footer{
+  display:flex;gap:var(--gap-md);justify-content:flex-end;position:sticky;bottom:0;z-index:3;
+  background:linear-gradient(180deg,transparent,color-mix(in hsl,var(--panel),#000 6%) 45%);
+  padding-top:var(--gap-sm);margin-top:var(--gap-sm);
+}
+
+/* Leaflet layering inside modals */
+.leaflet-container{z-index:0 !important}
+.leaflet-pane,.leaflet-top,.leaflet-bottom{z-index:500 !important}

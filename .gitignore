@@ -8,15 +8,10 @@
 !lost-found-portal/
 !lost-found-portal/**
 
-# Usual ignores inside that folder (optional safety)
-**/node_modules/
-**/dist/
-**/.vite/
-.vscode/
-.DS_Store
-npm-debug.log*
-yarn-*.log*
-pnpm-*.log*
-.env
-.env.*
-!.env.example
+# Ignore build artifacts inside that project
+lost-found-portal/node_modules/
+lost-found-portal/dist/
+lost-found-portal/.vite/
+lost-found-portal/.DS_Store
+lost-found-portal/npm-debug.log*
+lost-found-portal/yarn-error.log*

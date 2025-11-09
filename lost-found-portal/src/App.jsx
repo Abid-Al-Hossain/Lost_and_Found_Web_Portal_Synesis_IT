@@ -1,10 +1,11 @@
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
-import { AnimatePresence, motion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import Navbar from './components/Navbar'
 import Home from './pages/Home'
 import Auth from './pages/Auth'
 import Lost from './pages/Lost'
 import Found from './pages/Found'
+import Inbox from './pages/Inbox'
 import { useAuth } from './context/AuthContext'
 import { useSettings } from './context/SettingsContext'
 
@@ -19,11 +20,7 @@ function Page({ children }) {
   const { animation } = useSettings()
   const variant = pageVariants[animation] || pageVariants.fade
   return (
-    <motion.main
-      className="container"
-      {...variant}
-      transition={{ duration: 0.45 }}
-    >
+    <motion.main className="container" {...variant} transition={{ duration: 0.45 }}>
       {children}
     </motion.main>
   )
@@ -36,19 +33,24 @@ function PrivateRoute({ children }) {
 
 export default function App(){
   const location = useLocation()
+  const { user } = useAuth()
+
+  const landingElement = user
+    ? <Navigate to="/lost" replace />
+    : <Page><Home/></Page>
+
   return (
     <div>
       <Navbar />
-      <AnimatePresence mode="wait">
-        {/* Key by pathname so transitions run on every route change */}
-        <Routes location={location} key={location.pathname}>
-          <Route path="/" element={<Page><Home/></Page>} />
-          <Route path="/auth" element={<Page><Auth/></Page>} />
-          <Route path="/lost" element={<PrivateRoute><Page><Lost/></Page></PrivateRoute>} />
-          <Route path="/found" element={<PrivateRoute><Page><Found/></Page></PrivateRoute>} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </AnimatePresence>
+      {/* NOTE: We intentionally removed AnimatePresence here to avoid any route transition blocking */}
+      <Routes location={location}>
+        <Route path="/" element={landingElement} />
+        <Route path="/auth" element={<Page><Auth/></Page>} />
+        <Route path="/lost" element={<PrivateRoute><Page><Lost/></Page></PrivateRoute>} />
+        <Route path="/found" element={<PrivateRoute><Page><Found/></Page></PrivateRoute>} />
+        <Route path="/inbox" element={<PrivateRoute><Page><Inbox/></Page></PrivateRoute>} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
     </div>
   )
 }
