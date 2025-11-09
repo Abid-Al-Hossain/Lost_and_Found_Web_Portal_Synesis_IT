@@ -140,20 +140,10 @@ namespace Lost_And_Found_Web_Portal.Api.Controllers
 
         // Logout
         [HttpPost]
-        [Authorize(Roles ="User")]
+        [Authorize(Roles ="User,Admin")]
         public async Task<IActionResult> Logout()
         {
             string? token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-
-            string? email = User.FindFirst("userEmail")?.Value.ToString();
-            var roles = User.FindAll(ClaimTypes.Role).Select(r => r.Value).ToList();
-            
-            // Roles using jwt - Dycrypt token
-            var jwtRoles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
-
-
-            _logger.LogInformation("Logout attempt by user: {UserEmail} with roles: {UserRoles}", email, string.Join(", ", roles));
-
 
             if (token == null)
             {
@@ -181,31 +171,6 @@ namespace Lost_And_Found_Web_Portal.Api.Controllers
                 _logger.LogWarning("No token found in request headers during logout.");
                 return BadRequest("No token found.");
             }
-        }
-
-        // Add this method to extract roles from any authenticated request
-        [HttpGet]
-        [Authorize] // Any authenticated user
-        public IActionResult GetCurrentUserRoles()
-        {
-            // Get user email from token
-            string? email = User.FindFirst("userEmail")?.Value;
-
-            // Get roles from token
-            var roles = User.FindAll(ClaimTypes.Role).Select(r => r.Value).ToList();
-
-            // Get all claims for debugging
-            var allClaims = User.Claims.Select(c => new { c.Type, c.Value }).ToList();
-
-            _logger.LogInformation("User {Email} has roles: {Roles}", email, string.Join(", ", roles));
-
-            return Ok(new
-            {
-                Email = email,
-                Roles = roles,
-                IsAuthenticated = User.Identity?.IsAuthenticated,
-                AllClaims = allClaims // For debugging - remove in production
-            });
         }
 
     }

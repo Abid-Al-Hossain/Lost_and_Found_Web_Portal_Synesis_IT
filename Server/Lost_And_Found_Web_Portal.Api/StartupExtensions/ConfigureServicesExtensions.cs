@@ -91,8 +91,6 @@ namespace Lost_And_Found_Web_Portal.Api.StartupExtensions
 
 
             // JWT Authentication configuration
-            // JWT Authentication configuration
-            // JWT Authentication configuration - Updated version
             builder.Services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -113,13 +111,12 @@ namespace Lost_And_Found_Web_Portal.Api.StartupExtensions
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenKey)),
                     ValidateIssuer = false,
                     ValidateAudience = false,
-                    RoleClaimType = ClaimTypes.Role // This is crucial!
+                    RoleClaimType = ClaimTypes.Role
                 };
             });
 
 
             // Identity configuration
-            // Replace the Identity configuration with this:
             services.AddIdentityCore<ApplicationUser>(options =>
             {
                 options.User.RequireUniqueEmail = true;
@@ -129,7 +126,7 @@ namespace Lost_And_Found_Web_Portal.Api.StartupExtensions
                 options.Password.RequireLowercase = false;
                 options.Password.RequireDigit = false;
             })
-            .AddRoles<ApplicationRole>() // Add this for role support
+            .AddRoles<ApplicationRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders()
             .AddUserStore<UserStore<ApplicationUser, ApplicationRole, ApplicationDbContext, Guid>>()
@@ -138,7 +135,6 @@ namespace Lost_And_Found_Web_Portal.Api.StartupExtensions
 
 
             //Authorization configuration
-
             builder.Services.AddAuthorization(options =>
             {
                 options.DefaultPolicy = new AuthorizationPolicyBuilder()
