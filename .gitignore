@@ -28,47 +28,53 @@ obj/
 *obj/
 Server\Lost_And_Found_Web_Portal.Api\obj
 # Build outputs
-lost-found-portal/server/bin/
-lost-found-portal/server/**/bin/
-lost-found-portal/server/Debug/
-lost-found-portal/server/Release/
-lost-found-portal/server/**/Debug/
-lost-found-portal/server/**/Release/
+Server/bin/
+Server/**/bin/
+Server/Debug/
+Server/Release/
+Server/**/Debug/
+Server/**/Release/
 
 # Compiled/binary artifacts
-lost-found-portal/server/**/*.dll
-lost-found-portal/server/**/*.exe
-lost-found-portal/server/**/*.pdb
-lost-found-portal/server/**/*.log
+Server/**/*.dll
+Server/**/*.exe
+Server/**/*.pdb
+Server/**/*.log
 
 # IDE / editor files
-lost-found-portal/server/.vs/
-lost-found-portal/server/.vscode/
-lost-found-portal/server/.idea/
-lost-found-portal/server/*.DotSettings.user
+Server/.vs/
+Server/.vscode/
+Server/.idea/
+Server/*.DotSettings.user
 
 # User-specific & secret files
-lost-found-portal/server/*.user
-lost-found-portal/server/*.suo
-lost-found-portal/server/*.userosscache
-lost-found-portal/server/.env
-lost-found-portal/server/secrets.json
-lost-found-portal/server/Properties/launchSettings.json
+Server/*.user
+Server/*.suo
+Server/*.userosscache
+Server/.env
+Server/secrets.json
+Server/Properties/launchSettings.json
 
 # Publish / package artifacts
-lost-found-portal/server/publish/
-lost-found-portal/server/**/publish/
-lost-found-portal/server/packages/
-lost-found-portal/server/*.nupkg
+Server/publish/
+Server/**/publish/
+Server/packages/
+Server/*.nupkg
 
 # Databases, caches, test results, coverage
-lost-found-portal/server/*.db
-lost-found-portal/server/*.sqlite
-lost-found-portal/server/*.cache
-lost-found-portal/server/TestResults/
-lost-found-portal/server/test-results/
-lost-found-portal/server/*.coverage
+Server/*.db
+Server/*.sqlite
+Server/*.cache
+Server/TestResults/
+Server/test-results/
+Server/*.coverage
 
 # Misc
-lost-found-portal/server/_ReSharper*/
-lost-found-portal/server/.DS_Store
+Server/_ReSharper*/
+Server/.DS_Store
+Server/**/.vs/
+
+Server\Lost_And_Found_Web_Portal.Api\.vs
+Server\Lost_And_Found_Web_Portal.Api\obj
+Server\Lost_And_Found_Web_Portal.Core\obj
+Server\Lost_And_Found_Web_Portal.Infrastructure\obj

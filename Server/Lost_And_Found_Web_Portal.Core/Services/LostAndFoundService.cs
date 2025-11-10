@@ -28,6 +28,8 @@ namespace Lost_And_Found_Web_Portal.Core.Services
             _imageConverter = new ImageConverter();
         }
 
+       
+
         public async Task<LostItemToShowDTO> AddLostItemAsync(LostItemToAddDTO lostItemToAddDTO, string ownerName, Guid ownerId, string webRootPath)
         {
             LostItemToShowDTO lostItemToShowDTO = new LostItemToShowDTO();
@@ -68,6 +70,30 @@ namespace Lost_And_Found_Web_Portal.Core.Services
                 dto.PhotoBase64 = await _imageConverter.ConvertImageToBase64Async(dto.PhotoBase64, webRootPath);
             }
             return lostItemToShowDTOs;
+        }
+
+        public async Task<FoundItemToShowDTO> AddFoundItemAsync(FoundItemToAddDTO foundItemToAddDTO, string? ownerName, Guid ownerId)
+        {
+            FoundItem foundItem = foundItemToAddDTO.ToFoundItem();
+            foundItem.OwnerName = ownerName;
+            foundItem.OwnerId = ownerId;
+            await _lostAndFoundRepository.AddFoundItemAsync(foundItem);
+
+            return foundItem.ToFoundItemToShowDTO();
+        }
+
+        public async Task<List<FoundItemToShowDTO>> GetAllFoundItem()
+        {
+            List<FoundItem> foundItems = await _lostAndFoundRepository.GetAllFoundItems();
+            List<FoundItemToShowDTO> foundItemToShowDTOs = foundItems.Select(fi => fi.ToFoundItemToShowDTO()).ToList();
+            return foundItemToShowDTOs;
+        }
+
+        public async Task<List<FoundItemToShowDTO>> GetFoundItemById(Guid id)
+        {
+            List<FoundItem> foundItems = await _lostAndFoundRepository.GetFoundItemsById(id);
+            List<FoundItemToShowDTO> foundItemToShowDTOs = foundItems.Select(fi => fi.ToFoundItemToShowDTO()).ToList();
+            return foundItemToShowDTOs;
         }
     }
 }

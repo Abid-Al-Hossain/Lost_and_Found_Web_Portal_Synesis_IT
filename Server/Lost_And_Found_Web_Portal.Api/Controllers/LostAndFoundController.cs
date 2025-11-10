@@ -27,6 +27,8 @@ namespace Lost_And_Found_Web_Portal.Api.Controllers
         }
 
 
+        #region LostModulo
+
         [HttpPost]
         public async Task<IActionResult> AddLostItem(LostItemToAddDTO lostItemToAddDTO)
         {
@@ -79,6 +81,69 @@ namespace Lost_And_Found_Web_Portal.Api.Controllers
             List<LostItemToShowDTO> lostItemToShow=await _lostAndFoundService.GetLostItemById(_webHostEnvironment.WebRootPath,user.Id);
             return Ok(lostItemToShow);
         }
+
+        #endregion
+
+
+
+        #region FoundModulo
+
+
+        [HttpPost]
+        public async Task<IActionResult> AddFoundItem(FoundItemToAddDTO foundItemToAddDTO)
+        {
+            if (foundItemToAddDTO == null)
+            {
+                return BadRequest("Found item data is null.");
+            }
+
+            FoundItemToShowDTO foundItemToShowDTO = new FoundItemToShowDTO();
+            try
+            {
+                var email = User.FindFirst("userEmail")?.Value
+                   ?? User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
+
+                var user = await _userManager.FindByEmailAsync(email);
+
+                if (user == null)
+                {
+                    return Unauthorized();
+                }
+
+                string ownerName = user.PersonName;
+                Guid ownerId = user.Id;
+                foundItemToShowDTO = await _lostAndFoundService.AddFoundItemAsync(foundItemToAddDTO, ownerName, ownerId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while adding lost item.");
+                return StatusCode(500, "Internal server error");
+            }
+
+            return Ok(foundItemToShowDTO);
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetFoundItems()
+        {
+            List<FoundItemToShowDTO> foundItems = await _lostAndFoundService.GetAllFoundItem();
+            return Ok(foundItems);
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetMyFoundItemsPost()
+        {
+            var email = User.FindFirst("userEmail")?.Value
+                  ?? User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
+            ApplicationUser user = await _userManager.FindByEmailAsync(email);
+            List<FoundItemToShowDTO> foundItemToShow = await _lostAndFoundService.GetFoundItemById(user.Id);
+            return Ok(foundItemToShow);
+        }
+
+
+        #endregion
 
     }
 }

@@ -12,7 +12,7 @@ export default function ComposerFound({ onCreate }) {
   const { user } = useAuth()
   const initials = (user?.name || user?.email || 'U')[0]?.toUpperCase()
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault()
     const item = {
       id: crypto.randomUUID(),
@@ -22,11 +22,17 @@ export default function ComposerFound({ onCreate }) {
       ownerId: user?.email || 'anon',
       ownerName: user?.name || user?.email || 'Anonymous'
     }
-    onCreate(item)
-    play('success')
-    setOpen(false)
-    setPublicForm({ type:'', place:'', date:'', location:null })
-    setPrivateForm({ brand:'', color:'', detail:'' })
+
+    try{
+      const result = await Promise.resolve(onCreate ? onCreate(item) : item)
+      play('success')
+      setOpen(false)
+      setPublicForm({ type:'', place:'', date:'', location:null })
+      setPrivateForm({ brand:'', color:'', detail:'' })
+    }catch(err){
+      console.error('Failed to post found item:', err)
+      try{ window.alert(err?.message || String(err)) }catch(e){}
+    }
   }
 
   return (

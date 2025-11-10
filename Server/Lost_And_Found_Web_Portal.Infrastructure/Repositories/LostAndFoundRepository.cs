@@ -17,6 +17,7 @@ namespace Lost_And_Found_Web_Portal.Infrastructure.Repositories
             _dbContext = dbContext;
         }
 
+
         public Task AddLostItem(LostItem lostItem)
         {
             try
@@ -40,6 +41,25 @@ namespace Lost_And_Found_Web_Portal.Infrastructure.Repositories
         {
             return _dbContext.LostItems
                 .Where(x => x.OwnerId == id).ToList();
+        }
+
+
+        public Task AddFoundItemAsync(FoundItem foundItem)
+        {
+            _dbContext.FoundItems.AddAsync(foundItem).AsTask();
+            _dbContext.SaveChanges();
+            return Task.CompletedTask;
+        }
+
+        public async Task<List<FoundItem>> GetAllFoundItems()
+        {
+            return _dbContext.FoundItems.ToList();
+        }
+
+        public Task<List<FoundItem>> GetFoundItemsById(Guid id)
+        {
+            return Task.FromResult(_dbContext.FoundItems
+                .Where(x => x.OwnerId == id).ToList());
         }
     }
 }

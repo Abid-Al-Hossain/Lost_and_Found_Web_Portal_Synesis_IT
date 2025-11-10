@@ -18,12 +18,14 @@ namespace Lost_And_Found_Web_Portal.Infrastructure.DbContext
         }
 
         public virtual DbSet<LostItem> LostItems { get; set; }
+        public virtual DbSet<FoundItem> FoundItems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<LostItem>().ToTable("LostItems");
+            modelBuilder.Entity<FoundItem>().ToTable("FoundItems");
         }
     }
 }
