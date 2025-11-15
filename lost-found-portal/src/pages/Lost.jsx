@@ -13,7 +13,7 @@ const KEY_LOST = 'lf_lost_v1'
 const KEY_FOUND = 'lf_found_v1'
 
 export default function Lost(){
-  const [items, setItems] = useState([])
+  const [items, setItems] = useState(()=> store.get(KEY_LOST, []))
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const { user } = useAuth()
@@ -65,6 +65,10 @@ export default function Lost(){
       setLoading(true)
       setError(null)
       try{
+        if (!user?.accessToken) {
+          throw new Error('Please login to view your posts')
+        }
+        
         const token = user?.accessToken
         const headers = { 'Content-Type': 'application/json' }
         if(token) headers['Authorization'] = `Bearer ${token}`
@@ -195,8 +199,16 @@ export default function Lost(){
         <div style={{color:'var(--muted)'}}>{visible.length} item(s)</div>
       </div>
 
-      {visible.length === 0 ? (
-        <div className="panel center" style={{padding:24}}>No lost items yet.</div>
+      {loading ? (
+        <div className="panel center" style={{padding:24}}>Loading...</div>
+      ) : error ? (
+        <div className="panel center" style={{padding:24, color:'var(--danger)'}}>
+          Error: {error.message}
+        </div>
+      ) : visible.length === 0 ? (
+        <div className="panel center" style={{padding:24}}>
+          {mine ? 'No lost items posted by you yet.' : 'No lost items yet.'}
+        </div>
       ) : visible.map(i => <ItemCard key={i.id} item={i} type="lost" />)}
     </motion.div>
   )
