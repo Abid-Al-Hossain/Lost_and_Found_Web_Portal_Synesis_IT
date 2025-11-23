@@ -1,4 +1,5 @@
 ﻿using Lost_And_Found_Web_Portal.Api.Filters;
+using Lost_And_Found_Web_Portal.Api.Hubs;
 using Lost_And_Found_Web_Portal.Core.Domain.IdentityEntities;
 using Lost_And_Found_Web_Portal.Core.Domain.RepositoryContracts;
 using Lost_And_Found_Web_Portal.Core.ServiceContracts;
@@ -26,6 +27,23 @@ namespace Lost_And_Found_Web_Portal.Api.StartupExtensions
             builder.Services.AddEndpointsApiExplorer();
             //builder.Services.AddSwaggerGen();
 
+            services.AddSignalR(options =>
+            {
+                options.EnableDetailedErrors = true; 
+                options.KeepAliveInterval = TimeSpan.FromMinutes(1);
+                options.ClientTimeoutInterval = TimeSpan.FromMinutes(2);
+                options.HandshakeTimeout = TimeSpan.FromSeconds(15);
+                
+                options.MaximumReceiveMessageSize = 4096 * 1024; 
+                options.StreamBufferCapacity = 10;
+                options.MaximumParallelInvocationsPerClient = 1;
+            })
+            .AddHubOptions<ChatHub>(options =>
+            {
+                options.MaximumReceiveMessageSize = 4096 * 1024; 
+                options.StreamBufferCapacity = 10;
+                options.EnableDetailedErrors = true;
+            });
 
             builder.Services.AddScoped<ModelStateHandleFilter>();
             builder.Services.AddHostedService<AutoMatchingService>();
@@ -120,6 +138,20 @@ namespace Lost_And_Found_Web_Portal.Api.StartupExtensions
                     ValidateAudience = false,
                     RoleClaimType = ClaimTypes.Role
                 };
+
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"];
+                        var path = context.HttpContext.Request.Path;
+                        if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/chathub"))
+                        {
+                            context.Token = accessToken;
+                        }
+                        return Task.CompletedTask;
+                    }
+                };
             });
 
 
@@ -152,6 +184,7 @@ namespace Lost_And_Found_Web_Portal.Api.StartupExtensions
                 options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
                 options.AddPolicy("UserPolicy", policy => policy.RequireRole("User"));
                 options.AddPolicy("AdminOrUser", policy => policy.RequireRole("Admin", "User"));
+
             });
 
 

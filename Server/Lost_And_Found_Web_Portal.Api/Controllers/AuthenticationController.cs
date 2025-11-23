@@ -42,7 +42,7 @@ namespace Lost_And_Found_Web_Portal.Api.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> RegisterUser(RegisterDTO registerDTO)
         {
-            
+
             ApplicationUser user = new ApplicationUser
             {
                 UserName = registerDTO.Email,
@@ -53,9 +53,9 @@ namespace Lost_And_Found_Web_Portal.Api.Controllers
 
             IdentityResult result = await _userManager.CreateAsync(user, registerDTO.Password);
 
-            if(result.Succeeded)
+            if (result.Succeeded)
             {
-                if(!await _roleManager.RoleExistsAsync("User"))
+                if (!await _roleManager.RoleExistsAsync("User"))
                 {
                     ApplicationRole userRole = new ApplicationRole
                     {
@@ -64,9 +64,9 @@ namespace Lost_And_Found_Web_Portal.Api.Controllers
                     await _roleManager.CreateAsync(userRole);
                 }
                 await _userManager.AddToRoleAsync(user, UserTypes.User.ToString());
-                List<String> roles =  _userManager.GetRolesAsync(user).Result.ToList();
+                List<String> roles = _userManager.GetRolesAsync(user).Result.ToList();
                 string token = await _authenticationService.GetToken(user.Email, roles);
-                return Ok(new {message = "Register Successfull",token, personName = user.PersonName });
+                return Ok(new { message = "Register Successfull", token, personName = user.PersonName });
             }
             else
             {
@@ -126,7 +126,7 @@ namespace Lost_And_Found_Web_Portal.Api.Controllers
         {
             ApplicationUser? user = await _userManager.FindByEmailAsync(loginDTO.UserName);
 
-            if(user != null && await _userManager.CheckPasswordAsync(user, loginDTO.Password))
+            if (user != null && await _userManager.CheckPasswordAsync(user, loginDTO.Password))
             {
                 List<String> roles = _userManager.GetRolesAsync(user).Result.ToList();
                 string token = await _authenticationService.GetToken(user.Email, roles);
@@ -144,7 +144,7 @@ namespace Lost_And_Found_Web_Portal.Api.Controllers
 
         // Logout
         [HttpPost]
-        [Authorize(Roles ="User,Admin")]
+        [Authorize(Roles = "User,Admin")]
         public async Task<IActionResult> Logout()
         {
             string? token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
@@ -177,5 +177,52 @@ namespace Lost_And_Found_Web_Portal.Api.Controllers
             }
         }
 
+
+        [HttpPost]
+        [Authorize(Roles = "User,Admin")]
+        public async Task<IActionResult> ChangePassword(ChangePasswordDTO changePasswordDTO)
+        {
+            var email = User.FindFirst("userEmail")?.Value
+                 ?? User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
+            ApplicationUser? user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                return BadRequest("User not found.");
+            }
+            IdentityResult result = await _userManager.ChangePasswordAsync(user, changePasswordDTO.CurrentPassword, changePasswordDTO.NewPassword);
+            if (result.Succeeded)
+            {
+                return Ok("Password changed successfully.");
+            }
+            else
+            {
+                _logger.LogWarning("Password change failed for user: {UserName}. Errors: {Errors}", email, string.Join(", ", result.Errors.Select(e => e.Description)));
+                return BadRequest(result.Errors);
+            }
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "User,Admin")]
+        public async Task<IActionResult> ChangeName(ChangeNameDTO changeNameDTO)
+        {
+            var email = User.FindFirst("userEmail")?.Value
+                 ?? User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
+            ApplicationUser? user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                return BadRequest("User not found.");
+            }
+            user.PersonName = changeNameDTO.NewName;
+            IdentityResult result = await _userManager.UpdateAsync(user);
+            if (result.Succeeded)
+            {
+                return Ok("Name changed successfully.");
+            }
+            else
+            {
+                _logger.LogWarning("Name change failed for user: {UserName}. Errors: {Errors}", email, string.Join(", ", result.Errors.Select(e => e.Description)));
+                return BadRequest(result.Errors);
+            }
+        }
     }
 }

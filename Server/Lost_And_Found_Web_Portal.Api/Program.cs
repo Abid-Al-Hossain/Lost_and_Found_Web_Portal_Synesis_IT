@@ -1,3 +1,4 @@
+using Lost_And_Found_Web_Portal.Api.Hubs;
 using Lost_And_Found_Web_Portal.Api.Middleware;
 using Lost_And_Found_Web_Portal.Api.StartupExtensions;
 
@@ -32,5 +33,7 @@ app.UseMiddleware<TokenBlacklistMiddleware>();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHub<ChatHub>("/chathub");
 
 app.Run();

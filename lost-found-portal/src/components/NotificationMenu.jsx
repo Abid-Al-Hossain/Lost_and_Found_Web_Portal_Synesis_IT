@@ -8,6 +8,32 @@ export default function NotificationMenu() {
   const [notifications, setNotifications] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [unreadCount, setUnreadCount] = useState(0)
+
+  const fetchUnreadCount = async () => {
+    if (!user?.accessToken) return
+
+    try {
+      const token = user.accessToken
+      const headers = { 'Content-Type': 'application/json' }
+      if (token) headers['Authorization'] = `Bearer ${token}`
+
+      const resp = await fetch('https://localhost:7238/LostAndFound/UnreadCount', {
+        method: 'GET',
+        headers
+      })
+
+      if (!resp.ok) {
+        throw new Error(`Server returned ${resp.status}`)
+      }
+
+      const count = await resp.json()
+      setUnreadCount(typeof count === 'number' ? count : 0)
+    } catch (err) {
+      console.error('Failed to fetch unread count:', err)
+      setUnreadCount(0)
+    }
+  }
 
   const fetchNotifications = async () => {
     if (!user) return
@@ -39,12 +65,21 @@ export default function NotificationMenu() {
       }))
 
       setNotifications(normalized)
+      await fetchUnreadCount()
     } catch (err) {
       setError(err?.message || 'Failed to load notifications')
     } finally {
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+    if (user?.accessToken) {
+      fetchUnreadCount()
+      const interval = setInterval(fetchUnreadCount, 30000)
+      return () => clearInterval(interval)
+    }
+  }, [user?.accessToken])
 
   const handleNotificationClick = () => {
     setShowModal(true)
@@ -79,12 +114,13 @@ export default function NotificationMenu() {
             : notification
         )
       )
+      await fetchUnreadCount()
     } catch (err) {
       alert(err?.message || 'Failed to update notification status')
     }
   }
 
-  const unreadCount = notifications.filter(n => !n.isRead).length
+
 
   if (!user) return null
 

@@ -8,29 +8,23 @@ using System.Threading.Tasks;
 
 namespace Lost_And_Found_Web_Portal.Core.Domain.Entities
 {
-    public class ChatThread
+    public class Message
     {
-        [Key]
         [Required]
-        public Guid ChatThreadId { get; set; }
-
+        [Key]
+        public Guid MessageId { get; set; }
+        [Required]
+        public Guid ThreadId { get; set; }
         [Required]
         public Guid SenderId { get; set; }
-     
-        [Required]
-        public Guid ReceiverId { get; set; }
+        public string? TextContent { get; set; }
+        public string? ImagePath { get; set; }
 
         [Required]
-        public string? SenderName { get; set; }
+        public DateTime SentAt { get; set; }
 
         [Required]
-        public string? ReceiverName { get; set; }
-
-        [Required]
-        public DateTime CreatedAt { get; set; }
-        
-        [Required]
-        public DateTime LastUpdatedAt { get; set; }
-        
+        [Column(TypeName = "bit")]
+        public bool IsDeleted { get; set; } = false;
     }
 }

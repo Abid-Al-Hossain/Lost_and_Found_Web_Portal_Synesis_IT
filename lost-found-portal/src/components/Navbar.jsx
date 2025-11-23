@@ -3,16 +3,17 @@ import { motion } from 'framer-motion'
 import UserMenu from './UserMenu'
 import NotificationMenu from './NotificationMenu'
 import { useAuth } from '../context/AuthContext'
-import { useChat } from '../context/ChatContext'
+import { useSignalRChat } from '../context/SignalRChatContext'
 
 export default function Navbar(){
   const { user } = useAuth()
-  const { unreadTotal } = useChat()
+  const signalRChat = useSignalRChat()
+  
+
 
   const brandHref = user ? '/lost' : '/'
 
-  const Tab = ({ to, label, isInbox }) => {
-    const unread = isInbox && user ? unreadTotal(user.email) : 0
+  const Tab = ({ to, label }) => {
     return (
       <NavLink
         to={to}
@@ -33,16 +34,6 @@ export default function Navbar(){
                   background:'color-mix(in hsl, var(--accent), #fff 85%)', opacity:.18
                 }}
                 transition={{ type:'spring', stiffness:280, damping:24 }}
-              />
-            )}
-            {/* Facebook-style red dot for unread */}
-            {isInbox && unread > 0 && (
-              <span
-                aria-label="unread"
-                style={{
-                  position:'absolute', top:6, right:6, width:10, height:10,
-                  borderRadius:'50%', background:'#e02424', boxShadow:'0 0 0 2px var(--panel)'
-                }}
               />
             )}
           </>
@@ -85,7 +76,7 @@ export default function Navbar(){
         <nav className="row" style={{justifyContent:'center', gap:10}}>
           <Tab to="/lost" label="Lost" />
           <Tab to="/found" label="Found" />
-          {user && <Tab to="/inbox" label="Inbox" isInbox />}
+          {user && <Tab to="/inbox" label="Inbox" />}
         </nav>
 
         {/* Right: auth / profile */}

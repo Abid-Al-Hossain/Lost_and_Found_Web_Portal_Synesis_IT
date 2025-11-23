@@ -36,7 +36,7 @@ namespace Lost_And_Found_Web_Portal.Infrastructure.Repositories
 
         public List<LostItem> GetAllLostItems()
         {
-            return _dbContext.LostItems.ToList();
+            return _dbContext.LostItems.Where(x=>x.Status== "Pending").ToList();
         }
 
         public List<LostItem> GetLostItemsById(Guid id)
@@ -55,7 +55,7 @@ namespace Lost_And_Found_Web_Portal.Infrastructure.Repositories
 
         public async Task<List<FoundItem>> GetAllFoundItems()
         {
-            return _dbContext.FoundItems.ToList();
+            return _dbContext.FoundItems.Where(x=>x.Status=="Pending").ToList();
         }
 
         public Task<List<FoundItem>> GetFoundItemsById(Guid id)
@@ -90,6 +90,41 @@ namespace Lost_And_Found_Web_Portal.Infrastructure.Repositories
                 notification.IsRead = !notification.IsRead;
                 _dbContext.SaveChanges();
             }
+        }
+
+        public async Task PendingStatus(Guid lostPostId)
+        {
+            await _dbContext.LostItems.Where(x => x.Id == lostPostId)
+                .ForEachAsync(x => x.Status = "Pending");
+            _dbContext.SaveChanges();
+        }
+
+        public async Task ResolveStatus(Guid lostPostId)
+        {
+            await _dbContext.LostItems.Where(x => x.Id == lostPostId)
+                .ForEachAsync(x => x.Status = "Resolved");
+            _dbContext.SaveChanges();
+        }
+
+        public async Task PendingFoundStatus(Guid lostPostId)
+        {
+            await _dbContext.FoundItems.Where(x => x.Id == lostPostId)
+                .ForEachAsync(x => x.Status = "Pending");
+            _dbContext.SaveChanges();
+        }
+
+        public async Task ResolveFoundStatus(Guid lostPostId)
+        {
+            await _dbContext.FoundItems.Where(x => x.Id == lostPostId)
+                .ForEachAsync(x => x.Status = "Resolved");
+            _dbContext.SaveChanges();
+        }
+
+        public async Task<int> GetUnreadNotificationCount(Guid id)
+        {
+            return await _dbContext.Notifications
+                .Where(n => n.NotificationReceiver == id && n.IsRead == false)
+                .CountAsync();
         }
     }
 }

@@ -20,5 +20,10 @@ namespace Lost_And_Found_Web_Portal.Core.ServiceContracts
         public Task<List<LostItemToShowDTO>> GetLostItemById(string webRootPath, Guid Id);
         public Task<List<NotificationToShowDTO>> GetNotificationsByUserId(Guid id);
         public Task InvertNotificationAsRead(Guid notificationId);
+        public Task ResolveStatus(Guid lostPostId);
+        public Task PendingStatus(Guid lostPostId);
+        public Task ResolveFoundStatus(Guid lostPostId);
+        public Task PendingFoundStatus(Guid lostPostId);
+        public Task<int> GetUnreadNotificationCount(Guid id);
     }
 }

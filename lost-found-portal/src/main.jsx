@@ -7,18 +7,18 @@ import './app.css'
 import { AuthProvider } from './context/AuthContext'
 import { ThemeProvider } from './context/ThemeContext'
 import { SettingsProvider } from './context/SettingsContext'
-import { ChatProvider } from './context/ChatContext'
+import { SignalRChatProvider } from './context/SignalRChatContext'
 
 createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <ThemeProvider>
       <SettingsProvider>
         <AuthProvider>
-          <ChatProvider>
+          <SignalRChatProvider>
             <BrowserRouter>
               <App />
             </BrowserRouter>
-          </ChatProvider>
+          </SignalRChatProvider>
         </AuthProvider>
       </SettingsProvider>
     </ThemeProvider>

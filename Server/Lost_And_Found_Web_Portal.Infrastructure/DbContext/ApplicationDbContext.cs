@@ -19,9 +19,15 @@ namespace Lost_And_Found_Web_Portal.Infrastructure.DbContext
 
         public virtual DbSet<LostItem> LostItems { get; set; }
         public virtual DbSet<FoundItem> FoundItems { get; set; }
-        public virtual DbSet<Chat> Chats { get; set; }
-        public virtual DbSet<ChatThread> ChatThreads { get; set; }
+
         public virtual DbSet<Notification> Notifications { get; set; }
+
+
+        public virtual DbSet<Threads> Threads { get; set; }
+        public virtual DbSet<ThreadMembers> ThreadMembers { get; set; }
+        public virtual DbSet<Message> Messages { get; set; }
+        public virtual DbSet<MessageReceipt> MessageReceipts { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -29,9 +35,11 @@ namespace Lost_And_Found_Web_Portal.Infrastructure.DbContext
 
             modelBuilder.Entity<LostItem>().ToTable("LostItems");
             modelBuilder.Entity<FoundItem>().ToTable("FoundItems");
-            modelBuilder.Entity<Chat>().ToTable("Chats");
-            modelBuilder.Entity<ChatThread>().ToTable("ChatThreads");
             modelBuilder.Entity<Notification>().ToTable("Notifications");
+            modelBuilder.Entity<Threads>().ToTable("Threads");
+            modelBuilder.Entity<ThreadMembers>().ToTable("ThreadMembers");
+            modelBuilder.Entity<Message>().ToTable("Messages");
+            modelBuilder.Entity<MessageReceipt>().ToTable("MessageReceipts");
         }
     }
 }

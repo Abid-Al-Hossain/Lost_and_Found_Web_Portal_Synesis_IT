@@ -164,5 +164,30 @@ namespace Lost_And_Found_Web_Portal.Core.Services
         {
             await _lostAndFoundRepository.InvertNotificationAsRead(notificationId);
         }
+
+        public async Task ResolveStatus(Guid lostPostId)
+        {
+            await _lostAndFoundRepository.ResolveStatus(lostPostId);
+        }
+
+        public async Task PendingStatus(Guid lostPostId)
+        {
+            await _lostAndFoundRepository.PendingStatus(lostPostId);
+        }
+
+        public async Task ResolveFoundStatus(Guid lostPostId)
+        {
+            await _lostAndFoundRepository.ResolveFoundStatus(lostPostId);
+        }
+
+        public async Task PendingFoundStatus(Guid lostPostId)
+        {
+            await _lostAndFoundRepository.PendingFoundStatus(lostPostId);
+        }
+
+        public async Task<int> GetUnreadNotificationCount(Guid id)
+        {
+            return await _lostAndFoundRepository.GetUnreadNotificationCount(id);
+        }
     }
 }

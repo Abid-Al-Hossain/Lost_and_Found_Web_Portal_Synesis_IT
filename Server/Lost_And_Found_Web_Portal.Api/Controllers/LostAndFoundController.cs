@@ -37,13 +37,15 @@ namespace Lost_And_Found_Web_Portal.Api.Controllers
                 return BadRequest("Lost item data is null.");
             }
 
+            var email = User.FindFirst("userEmail")?.Value
+                   ?? User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
+
+            var user = await _userManager.FindByEmailAsync(email);
+
             LostItemToShowDTO lostItemToShowDTO = new LostItemToShowDTO();
             try
             {
-                var email = User.FindFirst("userEmail")?.Value
-                   ?? User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
-
-                var user = await _userManager.FindByEmailAsync(email);
+                
 
                 if (user == null)
                 {
@@ -64,12 +66,16 @@ namespace Lost_And_Found_Web_Portal.Api.Controllers
         }
 
 
-
         [HttpGet]
         public async Task<IActionResult> GetLostItems()
         {
+            var email = User.FindFirst("userEmail")?.Value
+                   ?? User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
+
+            var user = await _userManager.FindByEmailAsync(email);
+
             List<LostItemToShowDTO> lostItems =await _lostAndFoundService.GetAllLostItemx(_webHostEnvironment.WebRootPath);
-            return Ok(lostItems);
+            return Ok(new { lostItems,user.Id });
         }
 
         [HttpGet]
@@ -80,6 +86,19 @@ namespace Lost_And_Found_Web_Portal.Api.Controllers
             ApplicationUser user = await _userManager.FindByEmailAsync(email);
             List<LostItemToShowDTO> lostItemToShow=await _lostAndFoundService.GetLostItemById(_webHostEnvironment.WebRootPath,user.Id);
             return Ok(lostItemToShow);
+        }
+
+
+        [HttpPost]
+        public async Task ResolveLostPost(Guid lostPostId)
+        {
+            await _lostAndFoundService.ResolveStatus(lostPostId);
+        }
+
+        [HttpPost]
+        public async Task PendingLostPost(Guid lostPostId)
+        {
+            await _lostAndFoundService.PendingStatus(lostPostId);
         }
 
         #endregion
@@ -127,8 +146,12 @@ namespace Lost_And_Found_Web_Portal.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetFoundItems()
         {
+            var email = User.FindFirst("userEmail")?.Value
+                   ?? User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
+
+            var user = await _userManager.FindByEmailAsync(email);
             List<FoundItemToShowDTO> foundItems = await _lostAndFoundService.GetAllFoundItem();
-            return Ok(foundItems);
+            return Ok(new { foundItems, user.Id });
         }
 
 
@@ -151,7 +174,17 @@ namespace Lost_And_Found_Web_Portal.Api.Controllers
             return Ok(foundItems);
         }
 
+        [HttpPost]
+        public async Task ResolveFoundPost(Guid lostPostId)
+        {
+            await _lostAndFoundService.ResolveFoundStatus(lostPostId);
+        }
 
+        [HttpPost]
+        public async Task PendingFoundPost(Guid lostPostId)
+        {
+            await _lostAndFoundService.PendingFoundStatus(lostPostId);
+        }
 
 
         #endregion
@@ -176,7 +209,22 @@ namespace Lost_And_Found_Web_Portal.Api.Controllers
             await _lostAndFoundService.InvertNotificationAsRead(NotificationId);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> UnreadCount()
+        {
+            var email = User.FindFirst("userEmail")?.Value
+                  ?? User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
+            ApplicationUser user = await _userManager.FindByEmailAsync(email);
+            int unreadCount = await _lostAndFoundService.GetUnreadNotificationCount(user.Id);
+            return Ok(unreadCount);
+        }
+
         #endregion
+
+
+
+
+
 
     }
 }

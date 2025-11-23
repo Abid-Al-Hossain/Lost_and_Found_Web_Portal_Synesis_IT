@@ -5,7 +5,7 @@ import Home from './pages/Home'
 import Auth from './pages/Auth'
 import Lost from './pages/Lost'
 import Found from './pages/Found'
-import Inbox from './pages/Inbox'
+import SignalRInbox from './pages/SignalRInbox'
 import { useAuth } from './context/AuthContext'
 import { useSettings } from './context/SettingsContext'
 
@@ -42,13 +42,12 @@ export default function App(){
   return (
     <div>
       <Navbar />
-      {/* NOTE: We intentionally removed AnimatePresence here to avoid any route transition blocking */}
       <Routes location={location}>
         <Route path="/" element={landingElement} />
         <Route path="/auth" element={<Page><Auth/></Page>} />
         <Route path="/lost" element={<PrivateRoute><Page><Lost/></Page></PrivateRoute>} />
         <Route path="/found" element={<PrivateRoute><Page><Found/></Page></PrivateRoute>} />
-        <Route path="/inbox" element={<PrivateRoute><Page><Inbox/></Page></PrivateRoute>} />
+        <Route path="/inbox" element={<PrivateRoute><Page><SignalRInbox/></Page></PrivateRoute>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </div>

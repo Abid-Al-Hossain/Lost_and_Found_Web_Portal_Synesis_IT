@@ -24,7 +24,7 @@ To create a digital ecosystem that transforms the traditionally frustrating expe
 ### 💬 Real-time Communication Hub
 
 - **Instant Messaging**: Direct chat system between item owners and finders
-- **Thread Management**: Organized conversation threads for each item inquiry
+- **Thread Management**: Organized conversation threads
 - **Notification System**: Real-time alerts for potential matches
 - **Image Sharing in Chat**: Send verification photos and additional item details through chat
 
@@ -157,7 +157,7 @@ Update API endpoints in your React app as needed for your environment.
 
 ### 👤 Getting Started
 
-1. **Account Creation**: Register with email 
+1. **Account Creation**: Register with email
 2. **Dashboard Familiarization**: Explore the intuitive dashboard with quick actions and recent activity
 
 ### 📝 Posting Items

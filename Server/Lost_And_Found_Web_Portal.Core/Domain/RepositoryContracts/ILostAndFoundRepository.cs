@@ -19,6 +19,11 @@ namespace Lost_And_Found_Web_Portal.Core.Domain.RepositoryContracts
         public List<LostItem> GetLostItemsById(Guid email);
         public Task<List<Notification>> GetNotification(NotificationToAddDTO notificationToAddDTO);
         public Task<List<Notification>> GetNotificationsByUserId(Guid id);
+        public Task<int> GetUnreadNotificationCount(Guid id);
         public Task InvertNotificationAsRead(Guid notificationId);
+        public Task PendingFoundStatus(Guid lostPostId);
+        public Task PendingStatus(Guid lostPostId);
+        public Task ResolveFoundStatus(Guid lostPostId);
+        public Task ResolveStatus(Guid lostPostId);
     }
 }

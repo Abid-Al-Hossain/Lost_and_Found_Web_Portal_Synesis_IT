@@ -7,26 +7,19 @@ using System.Threading.Tasks;
 
 namespace Lost_And_Found_Web_Portal.Core.Domain.Entities
 {
-    public class Chat
+    public class MessageReceipt
     {
         [Required]
         [Key]
         public Guid Id { get; set; }
 
         [Required]
-        public Guid ThreadId { get; set; }
-
-
-        [Required]
-        public Guid? SenderId { get; set; }
+        public Guid MessageId { get; set; }
 
         [Required]
-        public Guid? ReceiverId { get; set; }
+        public Guid RecipientId { get; set; }
 
-        [MaxLength(1000)]
-        public string? Message { get; set; }
-
-        public string? AttachmentUrl { get; set; }
-
+        [Required]
+        public DateTime ReadAt { get; set; }
     }
 }

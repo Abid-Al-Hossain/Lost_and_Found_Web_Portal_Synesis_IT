@@ -19,47 +19,59 @@ namespace Lost_And_Found_Web_Portal.Infrastructure.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task AddChat(Chat chat)
+        public async Task AddMessage(Message message)
         {
-            await _dbContext.Chats.AddAsync(chat);
+            await _dbContext.Messages.AddAsync(message);
             _dbContext.SaveChanges();
         }
 
-        public async Task AddChatThread(ChatThread chatThread)
+        public async Task<Guid?> AddThread(Threads threads)
         {
-            await _dbContext.ChatThreads.AddAsync(chatThread);
+            await _dbContext.Threads.AddAsync(threads);
+            _dbContext.SaveChanges();
+            return threads.ThreadId;
+        }
+
+        public async Task AddThreadMember(ThreadMembers threadMembers)
+        {
+            await _dbContext.ThreadMembers.AddAsync(threadMembers);
             _dbContext.SaveChanges();
         }
 
-        public async Task<List<Chat>> GetChatByThreadId(Guid threadId)
+        public async Task<Guid?> ExistThread(Guid user1, Guid user2)
         {
-            return await _dbContext.Chats.Where(x => x.ThreadId == threadId).ToListAsync();
-        }
-        //public async Task<List<Chat>> GetChatByThreadId(Guid threadId)
-        //{
-        //    return _dbContext.Chats.Where(x=>x.ThreadId == threadId).ToList();
-        //}
+            Threads? threadExists = await _dbContext.Threads.Include(t=>t.ThreadMembers)
+                .FirstOrDefaultAsync(t => t.ThreadMembers != null &&
+                           t.ThreadMembers.Count == 2 &&
+                           t.ThreadMembers.Any(tm => tm.UserId == user1) &&
+                           t.ThreadMembers.Any(tm => tm.UserId == user2));
 
-        public async Task<List<ChatThread>> GetChatThreads(Guid receiverId, Guid userId)
-        {
-            List<ChatThread> threads = await _dbContext.ChatThreads.ToListAsync();
-            List<ChatThread> filteredThreads = new List<ChatThread>();
-            foreach (ChatThread chatThread in threads)
-            {
-                if ((chatThread.ReceiverId == receiverId && chatThread.SenderId == userId) ||
-                    (chatThread.ReceiverId == userId && chatThread.SenderId == receiverId))
-                {
-                    filteredThreads.Add(chatThread);
-                }
-            }
-            return filteredThreads;
+            return threadExists?.ThreadId;
         }
 
-        public async Task<List<ChatThread>> GetSortedThreadsById(Guid id)
+        public async Task<List<Message>> GetMessagesByThreadId(Guid threadGuid)
         {
-            return _dbContext.ChatThreads.Where(x=>x.SenderId==id || x.ReceiverId==id)
-                .OrderByDescending(x=>x.LastUpdatedAt)
-                .ToList();
+            return await _dbContext.Messages.Where(m=>m.ThreadId==threadGuid).ToListAsync();
+        }
+
+        public async Task<List<Threads>?> GetThreadsByUserId(Guid id)
+        {
+            return await _dbContext.Threads.Where(t => t.ThreadMembers.Any(tm=>tm.UserId==id)).ToListAsync();
+        }
+
+        public async Task<string?> GetUserNameById(Guid id)
+        {
+            return await _dbContext.Users
+                .Where(u => u.Id == id)
+                .Select(u => u.PersonName)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task LastActivityUpdate(Guid threadId, DateTime presentTime)
+        {
+            await _dbContext.Database.ExecuteSqlRawAsync(
+                "UPDATE Threads SET LastActivity = {0} WHERE ThreadId = {1}",
+                presentTime, threadId);
         }
     }
 }

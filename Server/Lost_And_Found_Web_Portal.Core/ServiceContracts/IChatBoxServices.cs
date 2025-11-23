@@ -9,10 +9,11 @@ namespace Lost_And_Found_Web_Portal.Core.ServiceContracts
 {
     public interface IChatBoxServices
     {
-        public Task<ChatToShowDTO> AddChat(ChatToAddDTO chatToAddDTO, string webRootPath);
-        public Task<bool> ExistThread(Guid receiverId,Guid userId);
-        public Task<List<ChatToShowDTO>> GetChatByThreadId(Guid threadId,string webRootPath);
-        public Task<List<ThreadToShowDTO>> GetSortedThreadsByUserId(Guid id);
-        public Task<ThreadToShowDTO> InitiateThread(ThreadToAddDto threadToAddDto);
+        public Task<MessageToShowDTO> AddMessage(MessageToAddDto messageDto, Guid id, string webRootPath);
+        public Task<Guid?> ExistThread(Guid id, Guid user2);
+        public Task<List<MessageToShowDTO>> GetMessagesByThreadId(Guid threadGuid, string webRootPath);
+        public Task<List<ThreadsToShowDTO>> GetSortedThreadsByUserId(Guid id);
+        public Task<Guid?> InitiatChatThread(Guid id, Guid user2,string threadName);
+        public Task LastActivityUpdate(Guid threadId);
     }
 }

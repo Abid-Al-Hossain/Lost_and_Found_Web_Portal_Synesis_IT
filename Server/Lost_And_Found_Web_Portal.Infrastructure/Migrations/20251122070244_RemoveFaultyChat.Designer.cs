@@ -4,6 +4,7 @@ using Lost_And_Found_Web_Portal.Infrastructure.DbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Lost_And_Found_Web_Portal.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251122070244_RemoveFaultyChat")]
+    partial class RemoveFaultyChat
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -152,55 +155,6 @@ namespace Lost_And_Found_Web_Portal.Infrastructure.Migrations
                     b.ToTable("LostItems", (string)null);
                 });
 
-            modelBuilder.Entity("Lost_And_Found_Web_Portal.Core.Domain.Entities.Message", b =>
-                {
-                    b.Property<Guid>("MessageId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ImagePath")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid>("SenderId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("SentAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("TextContent")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("ThreadId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("MessageId");
-
-                    b.ToTable("Messages", (string)null);
-                });
-
-            modelBuilder.Entity("Lost_And_Found_Web_Portal.Core.Domain.Entities.MessageReceipt", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("MessageId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("ReadAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("RecipientId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("MessageReceipts", (string)null);
-                });
-
             modelBuilder.Entity("Lost_And_Found_Web_Portal.Core.Domain.Entities.Notification", b =>
                 {
                     b.Property<Guid>("Id")
@@ -226,53 +180,6 @@ namespace Lost_And_Found_Web_Portal.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Notifications", (string)null);
-                });
-
-            modelBuilder.Entity("Lost_And_Found_Web_Portal.Core.Domain.Entities.ThreadMembers", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("IsAdmin")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("JoinedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("ThreadId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ThreadId");
-
-                    b.ToTable("ThreadMembers", (string)null);
-                });
-
-            modelBuilder.Entity("Lost_And_Found_Web_Portal.Core.Domain.Entities.Threads", b =>
-                {
-                    b.Property<Guid>("ThreadId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("LastActivity")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ThreadName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.HasKey("ThreadId");
-
-                    b.ToTable("Threads", (string)null);
                 });
 
             modelBuilder.Entity("Lost_And_Found_Web_Portal.Core.Domain.IdentityEntities.ApplicationRole", b =>
@@ -475,17 +382,6 @@ namespace Lost_And_Found_Web_Portal.Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Lost_And_Found_Web_Portal.Core.Domain.Entities.ThreadMembers", b =>
-                {
-                    b.HasOne("Lost_And_Found_Web_Portal.Core.Domain.Entities.Threads", "Thread")
-                        .WithMany("ThreadMembers")
-                        .HasForeignKey("ThreadId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Thread");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.HasOne("Lost_And_Found_Web_Portal.Core.Domain.IdentityEntities.ApplicationRole", null)
@@ -535,11 +431,6 @@ namespace Lost_And_Found_Web_Portal.Infrastructure.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Lost_And_Found_Web_Portal.Core.Domain.Entities.Threads", b =>
-                {
-                    b.Navigation("ThreadMembers");
                 });
 #pragma warning restore 612, 618
         }

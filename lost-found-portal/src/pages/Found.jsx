@@ -7,7 +7,6 @@ import ComposerFound from '../components/ComposerFound'
 import Modal from '../components/Modal'
 import MapPicker from '../components/MapPicker'
 import { useAuth } from '../context/AuthContext'
-import { useChat } from '../context/ChatContext'
 import { findMatches } from '../utils/matcher'
 import { useNavigate } from 'react-router-dom'
 
@@ -18,7 +17,6 @@ export default function Found(){
   const [items, setItems] = useState(()=> store.get(KEY_FOUND, []))
   const [mine, setMine] = useState(false)
   const { user } = useAuth()
-  const { notifyPotentialMatch } = useChat()
   const nav = useNavigate()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -63,6 +61,11 @@ export default function Found(){
       }
 
       const serverItem = await resp.json()
+      
+      console.log('Backend AddFoundItem Response:', serverItem)
+
+      console.log('Using stored user.backendId:', user?.backendId)
+
       saved = {
         id: serverItem.id || serverItem.Id || item.id,
         type: serverItem.type || serverItem.Type || item.type,
@@ -78,7 +81,7 @@ export default function Found(){
         },
         photo: serverItem.photoUrl || serverItem.PhotoUrl || serverItem.PhotoBase64 || serverItem.photoBase64 || null,
         status: serverItem.status || serverItem.Status || item.status || 'Pending',
-        ownerId: serverItem.ownerId || serverItem.OwnerId || item.ownerId,
+        ownerId: serverItem.ownerId || serverItem.OwnerId || user?.backendId || item.ownerId,
         ownerName: serverItem.ownerName || serverItem.OwnerName || item.ownerName
       }
     }catch(err){
@@ -94,9 +97,8 @@ export default function Found(){
     const matches = findMatches('found', saved, { candidates: lostList, maxMeters: 100 })
     if (matches.length > 0) {
       const m = matches[0]
-      const t = notifyPotentialMatch(m)
-      if (t && window.confirm(`Nearby “Lost” match for "${saved.type}" within ~${m.distanceM}m. Open chat?`)) {
-        nav(`/inbox?t=${t.id}`)
+      if (window.confirm(`Nearby "Lost" match for "${saved.type}" within ~${m.distanceM}m. Would you like to view the inbox?`)) {
+        nav('/inbox')
       }
     }
   }
@@ -113,7 +115,17 @@ export default function Found(){
 
         const resp = await fetch('https://localhost:7238/LostAndFound/GetFoundItems', { method: 'GET', headers })
         if(!resp.ok) throw new Error(`Server returned ${resp.status}`)
-        const list = await resp.json()
+        const responseData = await resp.json()
+        
+        console.log('Backend GetFoundItems Response:', responseData)
+        
+        const backendUserId = responseData.Id || responseData.id
+        if (backendUserId && user) {
+          user.backendId = backendUserId
+          console.log('Set user.backendId from GetFoundItems:', user.backendId)
+        }
+        
+        const list = responseData.foundItems || responseData.FoundItems || responseData || []
         const normalized = (Array.isArray(list) ? list : []).map(si => ({
           id: si.id || si.Id || crypto.randomUUID(),
           type: si.type || si.Type || '',

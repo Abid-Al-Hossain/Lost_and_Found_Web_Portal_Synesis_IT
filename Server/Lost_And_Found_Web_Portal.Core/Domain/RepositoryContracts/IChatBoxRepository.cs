@@ -10,10 +10,13 @@ namespace Lost_And_Found_Web_Portal.Core.Domain.RepositoryContracts
 {
     public interface IChatBoxRepository
     {
-        public Task AddChat(Chat chat);
-        public Task AddChatThread(ChatThread chatThread);
-        public Task<List<Chat>> GetChatByThreadId(Guid threadId);
-        public Task<List<ChatThread>> GetChatThreads(Guid receiverId, Guid userId);
-        public Task<List<ChatThread>> GetSortedThreadsById(Guid id);
+        public Task AddMessage(Message message);
+        public Task<Guid?> AddThread(Threads threads);
+        public Task AddThreadMember(ThreadMembers threadMembers);
+        public Task<Guid?> ExistThread(Guid user1, Guid user2);
+        public Task<List<Message>> GetMessagesByThreadId(Guid threadGuid);
+        public Task<List<Threads>?> GetThreadsByUserId(Guid id);
+        public Task<string?> GetUserNameById(Guid id);
+        public Task LastActivityUpdate(Guid threadId, DateTime presentTime);
     }
 }

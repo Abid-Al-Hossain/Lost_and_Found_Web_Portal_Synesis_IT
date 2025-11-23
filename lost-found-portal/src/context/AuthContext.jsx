@@ -109,8 +109,13 @@ const login = async ({ email, password }) => {
 
 const logout = () => setUser(null)
 
+const updateUser = (updates) => {
+	if (!user) return
+	const updatedUser = { ...user, ...updates }
+	setUser(updatedUser)
+}
 
-const value = useMemo(()=>({ user, register, login, logout }), [user])
+const value = useMemo(()=>({ user, register, login, logout, updateUser }), [user])
 return <AuthCtx.Provider value={value}>{children}</AuthCtx.Provider>
 }
 

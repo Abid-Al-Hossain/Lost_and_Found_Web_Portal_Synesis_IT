@@ -33,26 +33,21 @@ namespace Lost_And_Found_Web_Portal.Api.Controllers
                  ?? User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
             ApplicationUser? user = await _userManager.FindByEmailAsync(email);
 
-
-
-            bool exist = await _chatBoxServices.ExistThread(threadToAddDto.ReceiverId,user.Id);
-
-            if (exist==true)
+            if(user.Id==threadToAddDto.User2)
             {
-                return Ok();
+                return BadRequest("You can't chat with yourself");
             }
 
+            Guid? threadId = await _chatBoxServices.ExistThread(user.Id,threadToAddDto.User2);
             
-            if (user.Id==threadToAddDto.ReceiverId)
+            if(threadId != null)
             {
-                return BadRequest("You cant Chat With Yourself");
+                return Ok(threadId);
             }
+            
+            threadId = await _chatBoxServices.InitiatChatThread(user.Id, threadToAddDto.User2,threadToAddDto.ThreadName);
 
-
-            threadToAddDto.SenderId = user.Id;
-            ThreadToShowDTO threadToShowDTO = await _chatBoxServices.InitiateThread(threadToAddDto);
-
-            return Ok(threadToShowDTO);
+            return Ok(threadId);
         }
 
 
@@ -63,36 +58,13 @@ namespace Lost_And_Found_Web_Portal.Api.Controllers
                  ?? User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
             ApplicationUser? user = await _userManager.FindByEmailAsync(email);
 
-            if (user==null)
+            if (user == null)
             {
                 return BadRequest("Login First");
             }
 
-            List<ThreadToShowDTO> threadToShowDTOs = await _chatBoxServices.GetSortedThreadsByUserId(user.Id);
-            return Ok(threadToShowDTOs);
-        }
-
-        [HttpGet("{threadId}")]
-        public async Task<IActionResult> GetMessagesByThreadId(Guid threadId)
-        {
-            string webRootPath = _webHostEnvironment.WebRootPath;
-
-            List<ChatToShowDTO> chatToShowDTOs = await _chatBoxServices.GetChatByThreadId(threadId,webRootPath);
-            return Ok(chatToShowDTOs);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> SendMessage(ChatToAddDTO chatToAddDTO)
-        {
-            var email = User.FindFirst("userEmail")?.Value
-                 ?? User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
-            ApplicationUser? user = await _userManager.FindByEmailAsync(email);
-
-            chatToAddDTO.SenderId = user.Id;
-
-            string webRootPath = _webHostEnvironment.WebRootPath;
-            ChatToShowDTO chatToShowDTO = await _chatBoxServices.AddChat(chatToAddDTO, webRootPath);
-            return Ok(chatToShowDTO);
+            List<ThreadsToShowDTO> threadToShowDTOs = await _chatBoxServices.GetSortedThreadsByUserId(user.Id);
+            return Ok(new { threadToShowDTOs, user.Id });
         }
 
 
