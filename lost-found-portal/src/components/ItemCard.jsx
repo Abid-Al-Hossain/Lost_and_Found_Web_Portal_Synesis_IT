@@ -5,6 +5,7 @@ import { useState } from 'react'
 import MiniMap from './MiniMap'
 import { useAuth } from '../context/AuthContext'
 import { useSignalRChat } from '../context/SignalRChatContext'
+import { base_url } from '../Setup.js'
 
 export default function ItemCard({ item, type }) {
   const { user } = useAuth()
@@ -65,7 +66,7 @@ export default function ItemCard({ item, type }) {
       : (isLostItem ? 'PendingLostPost' : 'PendingFoundPost')
     
     try {
-      const response = await fetch(`https://localhost:7238/LostAndFound/${endpoint}?${postIdParam}=${item.id}`, {
+      const response = await fetch(`${base_url}/LostAndFound/${endpoint}?${postIdParam}=${item.id}`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${user.accessToken}`,
@@ -141,7 +142,7 @@ export default function ItemCard({ item, type }) {
       }
 
       const response = await fetch(
-        'https://localhost:7238/ChatBox/InitiatChatThread',
+        `${base_url}/ChatBox/InitiatChatThread`,
         {
           method: 'POST',
           headers: {

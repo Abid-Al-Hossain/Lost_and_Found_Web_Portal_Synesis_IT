@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import { store } from '../utils/storage'
+import { base_url } from '../Setup.js'
 
 
 const KEY = 'lf_auth_v1'
@@ -24,7 +25,7 @@ const register = async ({ name, email, password, confirmPassword, phone }) => {
         ConfirmPassword : confirmPassword
 	}
 
-	const resp = await fetch('https://localhost:7238/Authentication/RegisterUser', {
+	const resp = await fetch(`${base_url}/Authentication/RegisterUser`, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify(body)
@@ -32,7 +33,7 @@ const register = async ({ name, email, password, confirmPassword, phone }) => {
 
 	if(!resp.ok){
 		let parsed = null
-		try{ parsed = await resp.json() }catch(e){ /* not JSON */ }
+		try{ parsed = await resp.json() }catch(e){  }
 		try{ const cloneText = await resp.clone().text() }catch(_){}
 
 		if(parsed){
@@ -73,7 +74,7 @@ const register = async ({ name, email, password, confirmPassword, phone }) => {
 
 
 const login = async ({ email, password }) => {
-		const resp = await fetch('https://localhost:7238/Authentication/Login', {
+		const resp = await fetch(`${base_url}/Authentication/Login`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ userName: email, password })

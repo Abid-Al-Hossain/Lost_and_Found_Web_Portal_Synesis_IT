@@ -5,6 +5,7 @@ import ThemePicker from './ThemePicker'
 import AnimationPicker from './AnimationPicker'
 import SoundToggle from './SoundToggle'
 import Modal from './Modal'
+import { base_url } from '../Setup.js'
 
 
 export default function UserMenu(){
@@ -42,7 +43,7 @@ const changePassword = async (e) => {
     const headers = { 'Content-Type': 'application/json' }
     if (token) headers['Authorization'] = `Bearer ${token}`
 
-    const resp = await fetch('https://localhost:7238/Authentication/ChangePassword', {
+    const resp = await fetch(`${base_url}/Authentication/ChangePassword`, {
       method: 'POST',
       headers,
       body: JSON.stringify({
@@ -86,7 +87,7 @@ const changeName = async (e) => {
     const headers = { 'Content-Type': 'application/json' }
     if (token) headers['Authorization'] = `Bearer ${token}`
 
-    const resp = await fetch('https://localhost:7238/Authentication/ChangeName', {
+    const resp = await fetch(`${base_url}/Authentication/ChangeName`, {
       method: 'POST',
       headers,
       body: JSON.stringify({

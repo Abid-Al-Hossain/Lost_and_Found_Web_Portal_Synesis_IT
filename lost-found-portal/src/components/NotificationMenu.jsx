@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import Modal from './Modal'
+import { base_url } from '../Setup.js'
 
 export default function NotificationMenu() {
   const { user } = useAuth()
@@ -18,7 +19,7 @@ export default function NotificationMenu() {
       const headers = { 'Content-Type': 'application/json' }
       if (token) headers['Authorization'] = `Bearer ${token}`
 
-      const resp = await fetch('https://localhost:7238/LostAndFound/UnreadCount', {
+      const resp = await fetch(`${base_url}/LostAndFound/UnreadCount`, {
         method: 'GET',
         headers
       })
@@ -45,7 +46,7 @@ export default function NotificationMenu() {
       const headers = { 'Content-Type': 'application/json' }
       if (token) headers['Authorization'] = `Bearer ${token}`
 
-      const resp = await fetch('https://localhost:7238/LostAndFound/GetMyNotifications', {
+      const resp = await fetch(`${base_url}/LostAndFound/GetMyNotifications`, {
         method: 'GET',
         headers
       })
@@ -97,7 +98,7 @@ export default function NotificationMenu() {
       const headers = { 'Content-Type': 'application/json' }
       if (token) headers['Authorization'] = `Bearer ${token}`
 
-      const resp = await fetch('https://localhost:7238/LostAndFound/IsRead', {
+      const resp = await fetch(`${base_url}/LostAndFound/IsRead`, {
         method: 'POST',
         headers,
         body: JSON.stringify(notificationId)

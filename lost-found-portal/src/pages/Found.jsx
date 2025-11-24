@@ -9,6 +9,7 @@ import MapPicker from '../components/MapPicker'
 import { useAuth } from '../context/AuthContext'
 import { findMatches } from '../utils/matcher'
 import { useNavigate } from 'react-router-dom'
+import { base_url } from '../Setup.js'
 
 const KEY_FOUND = 'lf_found_v1'
 const KEY_LOST = 'lf_lost_v1'
@@ -48,7 +49,7 @@ export default function Found(){
       const headers = { 'Content-Type': 'application/json' }
       if(token) headers['Authorization'] = `Bearer ${token}`
 
-      const resp = await fetch('https://localhost:7238/LostAndFound/AddFoundItem', {
+      const resp = await fetch(`${base_url}/LostAndFound/AddFoundItem`, {
         method: 'POST',
         headers,
         body: JSON.stringify(payload)
@@ -113,7 +114,7 @@ export default function Found(){
         const headers = { 'Content-Type': 'application/json' }
         if(token) headers['Authorization'] = `Bearer ${token}`
 
-        const resp = await fetch('https://localhost:7238/LostAndFound/GetFoundItems', { method: 'GET', headers })
+        const resp = await fetch(`${base_url}/LostAndFound/GetFoundItems`, { method: 'GET', headers })
         if(!resp.ok) throw new Error(`Server returned ${resp.status}`)
         const responseData = await resp.json()
         
@@ -161,7 +162,7 @@ export default function Found(){
         const headers = { 'Content-Type': 'application/json' }
         if(token) headers['Authorization'] = `Bearer ${token}`
 
-        const resp = await fetch('https://localhost:7238/LostAndFound/GetMyFoundItemsPost', { method: 'GET', headers })
+        const resp = await fetch(`${base_url}/LostAndFound/GetMyFoundItemsPost`, { method: 'GET', headers })
         if(!resp.ok) throw new Error(`Server returned ${resp.status}`)
         const list = await resp.json()
         const normalized = (Array.isArray(list) ? list : []).map(si => ({
@@ -223,7 +224,7 @@ export default function Found(){
         Longitude: filterData.location.lng.toString()
       })
 
-      const resp = await fetch(`https://localhost:7238/LostAndFound/GetFoundItemsByFiltering?${filterParams}`, {
+      const resp = await fetch(`${base_url}/LostAndFound/GetFoundItemsByFiltering?${filterParams}`, {
         method: 'GET',
         headers
       })

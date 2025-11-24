@@ -42,7 +42,7 @@ namespace Lost_And_Found_Web_Portal.Core.Helpers
             var descriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.Now.AddDays(1),
+                Expires = DateTime.Now.AddDays(30),
                 SigningCredentials = credentials
             };
 

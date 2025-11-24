@@ -9,6 +9,7 @@ import {
 } from 'react'
 import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr'
 import { useAuth } from './AuthContext'
+import { base_url } from '../Setup.js'
 
 const SignalRChatContext = createContext()
 
@@ -53,7 +54,7 @@ export function SignalRChatProvider({ children }) {
 
     try {
       const newConnection = new HubConnectionBuilder()
-        .withUrl('https://localhost:7238/chathub', {
+        .withUrl(`${base_url}/chathub`, {
           accessTokenFactory: () => user?.accessToken
         })
         .withAutomaticReconnect()
@@ -362,7 +363,7 @@ export function SignalRChatProvider({ children }) {
 
     try {
       const response = await fetch(
-        'https://localhost:7238/ChatBox/GetSortedThreads',
+        `${base_url}/ChatBox/GetSortedThreads`,
         {
           method: 'GET',
           headers: {

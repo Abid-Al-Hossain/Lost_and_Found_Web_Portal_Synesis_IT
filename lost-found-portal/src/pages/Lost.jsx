@@ -7,6 +7,7 @@ import ComposerLost from '../components/ComposerLost'
 import { useAuth } from '../context/AuthContext'
 import { findMatches } from '../utils/matcher'
 import { useNavigate } from 'react-router-dom'
+import { base_url } from '../Setup.js'
 
 const KEY_LOST = 'lf_lost_v1'
 const KEY_FOUND = 'lf_found_v1'
@@ -77,24 +78,21 @@ export default function Lost() {
         if (token) headers['Authorization'] = `Bearer ${token}`
 
         const resp = await fetch(
-          'https://localhost:7238/LostAndFound/GetLostItems',
+          `${base_url}/LostAndFound/GetLostItems`,
           { method: 'GET', headers }
         )
         if (!resp.ok) throw new Error(`Server returned ${resp.status}`)
 
         const responseData = await resp.json()
         
-        // Debug: Log the actual GetLostItems response structure
         console.log('Backend GetLostItems Response:', responseData)
         
-        // Extract user ID from response and store it
         const backendUserId = responseData.Id || responseData.id
         if (backendUserId && user) {
           user.backendId = backendUserId
           console.log('Set user.backendId from GetLostItems:', user.backendId)
         }
         
-        // Extract the items array
         const list = responseData.lostItems || responseData.LostItems || responseData || []
         const normalized = (Array.isArray(list) ? list : []).map(si =>
           normalizeLostItem(si, backendUserId)
@@ -127,25 +125,22 @@ export default function Lost() {
         if (token) headers['Authorization'] = `Bearer ${token}`
 
         const resp = await fetch(
-          'https://localhost:7238/LostAndFound/GetMyLostItemsPost',
+          `${base_url}/LostAndFound/GetMyLostItemsPost`,
           { method: 'GET', headers }
         )
         if (!resp.ok) throw new Error(`Server returned ${resp.status}`)
 
         const responseData = await resp.json()
         
-        // Extract user ID if response includes it (same format as GetLostItems)
         const backendUserId = responseData.Id || responseData.id || user?.backendId
         if (backendUserId && user) {
           user.backendId = backendUserId
         }
         
-        // Extract the items array
         const list = responseData.lostItems || responseData.LostItems || responseData || []
         const normalized = (Array.isArray(list) ? list : []).map(si =>
           normalizeLostItem(
             si,
-            // fallbacks in case API doesn't send OwnerId/OwnerName here
             backendUserId || user?.id || user?.backendId || user?.email || null,
             user?.name || null
           )
@@ -207,7 +202,7 @@ export default function Lost() {
       if (token) headers['Authorization'] = `Bearer ${token}`
 
       const resp = await fetch(
-        'https://localhost:7238/LostAndFound/AddLostItem',
+        `${base_url}/LostAndFound/AddLostItem`,
         {
           method: 'POST',
           headers,
@@ -291,7 +286,6 @@ export default function Lost() {
       try {
         window.alert(err?.message || String(err))
       } catch (e) {
-        /* ignore */
       }
       return
     }
@@ -300,7 +294,6 @@ export default function Lost() {
     setItems(next)
     store.set(KEY_LOST, next)
 
-    // Local match against found list
     const foundList = store.get(KEY_FOUND, [])
     const matches = findMatches('lost', saved, {
       candidates: foundList,

@@ -75,12 +75,23 @@ namespace Lost_And_Found_Web_Portal.Core.Services
         {
             List<Threads>? threads = await _chatBoxRepository.GetThreadsByUserId(id);
             List<ThreadsToShowDTO> threadsToShowDTOs = new List<ThreadsToShowDTO>();
-            foreach(Threads thread in threads)
+            //ApplicationUser? user = await _userManager.FindByIdAsync(id.ToString());
+            
+
+            foreach (Threads thread in threads)
             {
+                Guid otherUser = thread.ThreadMembers.FirstOrDefault(ThreadMembers => ThreadMembers.UserId != id) != null ? 
+                    thread.ThreadMembers.FirstOrDefault(ThreadMembers => ThreadMembers.UserId != id).UserId 
+                    : Guid.Empty;
+
+                ApplicationUser? otherApplicationUser = await _userManager.FindByIdAsync(otherUser.ToString());
+
                 ThreadsToShowDTO threadsToShowDTOx = new ThreadsToShowDTO();
                 threadsToShowDTOx.ThreadId = thread.ThreadId;
-                threadsToShowDTOx.ThreadName = thread.ThreadName;
+                threadsToShowDTOx.ThreadName = otherApplicationUser != null ? otherApplicationUser.PersonName
+                    : "Unknown User";
                 threadsToShowDTOx.LastActivity = thread.LastActivity;
+                
                 threadsToShowDTOs.Add(threadsToShowDTOx);
             }
 

@@ -56,7 +56,7 @@ namespace Lost_And_Found_Web_Portal.Infrastructure.Repositories
 
         public async Task<List<Threads>?> GetThreadsByUserId(Guid id)
         {
-            return await _dbContext.Threads.Where(t => t.ThreadMembers.Any(tm=>tm.UserId==id)).ToListAsync();
+            return await _dbContext.Threads.Include(t=>t.ThreadMembers).Where(t => t.ThreadMembers.Any(tm=>tm.UserId==id)).ToListAsync();
         }
 
         public async Task<string?> GetUserNameById(Guid id)
